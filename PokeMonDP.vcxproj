@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{258AFFD1-CD55-4CA1-ABA7-AD0F3E527084}</ProjectGuid>
+    <RootNamespace>DXStartup</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\KHJ\DirectX-PortPolio\FMOD\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\KHJ\DirectX-PortPolio\FMOD\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>framework.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>./</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <EntryPointName>VS</EntryPointName>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>framework.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>fmod_vc.lib;Ole32.lib; OleAut32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\KHJ\DirectX-PortPolio\DirectXTex\Shaders\Compiled;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <FxCompile>
+      <EntryPointName>VS</EntryPointName>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Battle\Appearance.h" />
+    <ClInclude Include="Battle\BattleAnimation.h" />
+    <ClInclude Include="Battle\BattleManager.h" />
+    <ClInclude Include="Battle\BattleTransform.h" />
+    <ClInclude Include="Battle\Font.h" />
+    <ClInclude Include="Battle\HPBar.h" />
+    <ClInclude Include="Battle\Meditation.h" />
+    <ClInclude Include="Battle\Pokeball.h" />
+    <ClInclude Include="Battle\SelectButton.h" />
+    <ClInclude Include="Battle\Skill.h" />
+    <ClInclude Include="Battle\StatusBox.h" />
+    <ClInclude Include="Battle\TextFrame.h" />
+    <ClInclude Include="FMOD\inc\fmod.h" />
+    <ClInclude Include="FMOD\inc\fmod.hpp" />
+    <ClInclude Include="FMOD\inc\fmod_codec.h" />
+    <ClInclude Include="FMOD\inc\fmod_common.h" />
+    <ClInclude Include="FMOD\inc\fmod_dsp.h" />
+    <ClInclude Include="FMOD\inc\fmod_dsp_effects.h" />
+    <ClInclude Include="FMOD\inc\fmod_errors.h" />
+    <ClInclude Include="FMOD\inc\fmod_output.h" />
+    <ClInclude Include="Framework\Buffer\ConstBuffer.h" />
+    <ClInclude Include="Framework\Buffer\GlobalBuffer.h" />
+    <ClInclude Include="Framework\Buffer\IndexBuffer.h" />
+    <ClInclude Include="Framework\Buffer\VertexBuffer.h" />
+    <ClInclude Include="Framework\Collision\CircleCollider.h" />
+    <ClInclude Include="Framework\Collision\Collider.h" />
+    <ClInclude Include="Framework\Math\Transform.h" />
+    <ClInclude Include="Framework\Math\Vector2.h" />
+    <ClInclude Include="Framework\Render\Clip.h" />
+    <ClInclude Include="Framework\Render\Frame.h" />
+    <ClInclude Include="Framework\Render\Texture.h" />
+    <ClInclude Include="Framework\Shader\PixelShader.h" />
+    <ClInclude Include="Framework\Shader\VertexShader.h" />
+    <ClInclude Include="Framework\System\Device.h" />
+    <ClInclude Include="Framework\Utility\Control.h" />
+    <ClInclude Include="Framework\Utility\Singleton.h" />
+    <ClInclude Include="Framework\Utility\Timer.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="Object\BackGround\BackGround.h" />
+    <ClInclude Include="Object\BackGround\BattelBackGround.h" />
+    <ClInclude Include="Object\BackGround\BattleField.h" />
+    <ClInclude Include="Object\BackGround\StartBackGround.h" />
+    <ClInclude Include="Battle\BattlePlayer.h" />
+    <ClInclude Include="Battle\Champion.h" />
+    <ClInclude Include="Object\InGameEnemy.h" />
+    <ClInclude Include="Object\Obstackle.h" />
+    <ClInclude Include="Object\Player.h" />
+    <ClInclude Include="Object\Quad.h" />
+    <ClInclude Include="Object\Select.h" />
+    <ClInclude Include="Object\SelectBox.h" />
+    <ClInclude Include="Object\TextBox.h" />
+    <ClInclude Include="Object\Vertex.h" />
+    <ClInclude Include="Object\TransformList.h" />
+    <ClInclude Include="PokeMonDP.h" />
+    <ClInclude Include="Pokemon\Pokemon.h" />
+    <ClInclude Include="Program\Program.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="Scenes\CharactorSelectScene.h" />
+    <ClInclude Include="Scenes\Scene.h" />
+    <ClInclude Include="Scenes\SceneList.h" />
+    <ClInclude Include="Framework\Collision\RectCollider.h" />
+    <ClInclude Include="Scenes\StartScene.h" />
+    <ClInclude Include="Scenes\TownScene.h" />
+    <ClInclude Include="Scenes\vsChampionScene.h" />
+    <ClInclude Include="Scenes\vsPokemonScene.h" />
+    <ClInclude Include="Sound\Sound.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="프로젝트를 새로 만들 때마다 점검할 사항.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Battle\Appearance.cpp" />
+    <ClCompile Include="Battle\BattleAnimation.cpp" />
+    <ClCompile Include="Battle\BattleManager.cpp" />
+    <ClCompile Include="Battle\Font.cpp" />
+    <ClCompile Include="Battle\HPBar.cpp" />
+    <ClCompile Include="Battle\Meditation.cpp" />
+    <ClCompile Include="Battle\Pokeball.cpp" />
+    <ClCompile Include="Battle\SelectButton.cpp" />
+    <ClCompile Include="Battle\Skill.cpp" />
+    <ClCompile Include="Battle\StatusBox.cpp" />
+    <ClCompile Include="Battle\TextFrame.cpp" />
+    <ClCompile Include="Framework\Buffer\ConstBuffer.cpp" />
+    <ClCompile Include="Framework\Buffer\IndexBuffer.cpp" />
+    <ClCompile Include="Framework\Buffer\VertexBuffer.cpp" />
+    <ClCompile Include="Framework\Collision\CircleCollider.cpp" />
+    <ClCompile Include="Framework\Collision\Collider.cpp" />
+    <ClCompile Include="Framework\Collision\RectCollider.cpp" />
+    <ClCompile Include="Framework\Math\Vector2.cpp" />
+    <ClCompile Include="Framework\Render\Clip.cpp" />
+    <ClCompile Include="Framework\Render\Frame.cpp" />
+    <ClCompile Include="Framework\Render\Texture.cpp" />
+    <ClCompile Include="Framework\Shader\PixelShader.cpp" />
+    <ClCompile Include="Framework\Shader\VertexShader.cpp" />
+    <ClCompile Include="Framework\System\Device.cpp" />
+    <ClCompile Include="Framework\Utility\Control.cpp" />
+    <ClCompile Include="Framework\Utility\Timer.cpp" />
+    <ClCompile Include="framework.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Object\BackGround\BackGround.cpp" />
+    <ClCompile Include="Object\BackGround\BattelBackGround.cpp" />
+    <ClCompile Include="Object\BackGround\BattleField.cpp" />
+    <ClCompile Include="Object\BackGround\StartBackGround.cpp" />
+    <ClCompile Include="Battle\BattlePlayer.cpp" />
+    <ClCompile Include="Battle\Champion.cpp" />
+    <ClCompile Include="Object\InGameEnemy.cpp" />
+    <ClCompile Include="Object\Obstackle.cpp" />
+    <ClCompile Include="Object\Player.cpp" />
+    <ClCompile Include="Object\Quad.cpp" />
+    <ClCompile Include="Object\Select.cpp" />
+    <ClCompile Include="Object\SelectBox.cpp" />
+    <ClCompile Include="Object\TextBox.cpp" />
+    <ClCompile Include="PokeMonDP.cpp" />
+    <ClCompile Include="Pokemon\Pokemon.cpp" />
+    <ClCompile Include="Program\Program.cpp" />
+    <ClCompile Include="Framework\Math\Transform.cpp" />
+    <ClCompile Include="Scenes\CharactorSelectScene.cpp" />
+    <ClCompile Include="Scenes\StartScene.cpp" />
+    <ClCompile Include="Scenes\TownScene.cpp" />
+    <ClCompile Include="Scenes\vsChampionScene.cpp" />
+    <ClCompile Include="Scenes\vsPokemonScene.cpp" />
+    <ClCompile Include="Sound\Sound.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="PokeMonDP.ico" />
+    <Image Include="small.ico" />
+    <Image Include="Texture\Attack\Crunch.png" />
+    <Image Include="Texture\Attack\Dragon-Claw.png" />
+    <Image Include="Texture\Attack\Healing.png" />
+    <Image Include="Texture\Attack\Hydro-Pump.png" />
+    <Image Include="Texture\Attack\Scary-Face-Reg.png" />
+    <Image Include="Texture\Attack\Surf-Regular.png" />
+    <Image Include="Texture\Attack\Wood-Hammer.png" />
+    <Image Include="Texture\BattleBackGround.png" />
+    <Image Include="Texture\Champion.png" />
+    <Image Include="Texture\ChampionMap.png" />
+    <Image Include="Texture\CharactorSelect.png" />
+    <Image Include="Texture\CharactorSelectMap.png" />
+    <Image Include="Texture\HPBar.png" />
+    <Image Include="Texture\OverWorldPokemon.png" />
+    <Image Include="Texture\Player_boy.png" />
+    <Image Include="Texture\Player_girl.png" />
+    <Image Include="Texture\PokeBall.png" />
+    <Image Include="Texture\PokemonBattleMap.png" />
+    <Image Include="Texture\SelectCharactor.png" />
+    <Image Include="Texture\StartMap.png" />
+    <Image Include="Texture\StartScene.png" />
+    <Image Include="Texture\StatusBox.png" />
+    <Image Include="Texture\Text Boxes.png" />
+    <Image Include="Texture\Pokemon.png" />
+    <Image Include="Texture\Town2.png" />
+    <Image Include="Texture\vsChampion.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\PixelShader\PixelPos.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shader\PixelShader\PixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shader\PixelShader\PixelUV.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PS</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shader\VertexShader.hlsl" />
+    <FxCompile Include="Shader\VertexShader\VertexPos.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\VertexShader\VertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\VertexShader\VertexUV.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Library\DirectXTex\텍스트.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="DirectXTex\DirectXTex_Desktop_2022.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
+    <ProjectReference Include="ImGui\ImGui.vcxproj">
+      <Project>{fdd60556-cfd5-4f54-b230-33fd3e1d88ed}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fmod.dll" />
+    <None Include="FMOD\inc\fmod.cs" />
+    <None Include="FMOD\inc\fmod_dsp.cs" />
+    <None Include="FMOD\inc\fmod_errors.cs" />
+    <None Include="FMOD\lib\x64\fmod.dll" />
+    <None Include="FMOD\lib\x64\fmodL.dll" />
+    <None Include="imgui.ini" />
+    <None Include="RCa14012" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PokeMonDP.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="FMOD\lib\x64\fmodL_vc.lib" />
+    <Library Include="FMOD\lib\x64\fmod_vc.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="BGM\1657D3544D7DC34736.mp3" />
+    <Media Include="BGM\17159E4D4D7DC6202B.mp3" />
+    <Media Include="BGM\206496544D7DC35D18.mp3" />
+    <Media Include="BGM\Data_sound_bgm_Introduction.wav" />
+    <Media Include="BGM\Data_sound_bgm_Lake.wav" />
+    <Media Include="BGM\Pokemon Diamond - Intro - Nintendo DS.mp3" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
