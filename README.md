@@ -19,8 +19,8 @@ RectCollider를 만들어 AABB충돌을 이용해 플레이어가 이동할 수 
 다음 스테이지에선 특정 RectColler와 충돌되면 다음 Scene으로 넘어가는 트리거가 있습니다.   
 ### vsPocketMonScene    
 ### vsChampionScene    
-BattleManager이란 클래스를 만들어 전투의 흐름을 담당했습니다.   
-Font라는 클래스를 만들어 화면에 보일 글자들을 렌더링했습니다.
+BattleManager이란 클래스를 만들어 턴제 전투의 흐름을 담당했습니다.   
+Font라는 클래스를 만들어 화면에 보일 글자들을 렌더링했습니다.   
 
 
 
