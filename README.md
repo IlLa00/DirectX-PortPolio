@@ -1,4 +1,4 @@
-# DirectX PortPolio     
+# DirectX PortFolio     
 DirectX2D를 이용해 제작한 포켓몬DP 모작 1인 첫번째 포트폴리오입니다.    
 에디터 : VS 2019, ImGui, Fmod / 제작기간 : 2달 (2024.04 ~ 2024.06)  
 Notion : https://thoughtful-shop-228.notion.site/DirectX2D-a534dbb0046f473f9b741c26eb928010?pvs=4    
