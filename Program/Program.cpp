@@ -1,4 +1,4 @@
-#include "framework.h"
+ï»¿#include "framework.h"
 #include "Program.h"
 
 Program::Program()
@@ -33,7 +33,7 @@ void Program::Update()
 	Control::Get()->Update();
 	Timer::Get()->Update();
 
-	if (Now_scene == Scene_list[0] && KEY_CON->Down(VK_SPACE)) // °ÔÀÓ ½ÃÀÛÈ­¸é -> Ä³¸¯ÅÍ ¼±ÅÃÈ­¸é
+	if (Now_scene == Scene_list[0] && KEY_CON->Down(VK_SPACE)) // ê²Œìž„ ì‹œìž‘í™”ë©´ -> ìºë¦­í„° ì„ íƒí™”ë©´
 	{
 		Now_scene = Scene_list[1];
 
@@ -43,7 +43,7 @@ void Program::Update()
 	}
 
 	if (Now_scene == Scene_list[1] && mouse_click_pos.x > 260.0f && mouse_click_pos.x < 410 && mouse_click_pos.y < 535 && mouse_click_pos.y > 185)
-	// Ä³¸¯ÅÍ ¼±ÅÃÈ­¸é -> ¸¶À» (³²ÀÚ¼±ÅÃ)
+	// ìºë¦­í„° ì„ íƒí™”ë©´ -> ë§ˆì„ (ë‚¨ìžì„ íƒ)
 	{
 		gender = true;
 		Now_scene = Scene_list[2];
@@ -53,7 +53,7 @@ void Program::Update()
 		Now_sound->Play();
 	}
 	if (Now_scene == Scene_list[1] && mouse_click_pos.x > 865.0f && mouse_click_pos.x < 1015 && mouse_click_pos.y < 535 && mouse_click_pos.y > 185)
-	// Ä³¸¯ÅÍ ¼±ÅÃÈ­¸é -> ¸¶À» (¿©ÀÚ¼±ÅÃ)
+	// ìºë¦­í„° ì„ íƒí™”ë©´ -> ë§ˆì„ (ì—¬ìžì„ íƒ)
 	{
 		gender = false;
 		Now_scene = Scene_list[2];
@@ -63,7 +63,7 @@ void Program::Update()
 		Now_sound->Play();
 	}
 
-	if (Now_scene == Scene_list[2] && is_vsPokemon) // ¸¶À» -> Æ÷ÄÏ¸ó°ú ÀüÅõ
+	if (Now_scene == Scene_list[2] && is_vsPokemon) // ë§ˆì„ -> í¬ì¼“ëª¬ê³¼ ì „íˆ¬
 	{
 		Now_scene = Scene_list[3];
 
@@ -71,7 +71,7 @@ void Program::Update()
 		Now_sound = Sound_list[3];
 		Now_sound->Play();
 	}
-	if (Now_scene == Scene_list[3] && clear_vsPokemon) // Æ÷ÄÏ¸ó°ú ÀüÅõ¸¦ ³¡³»¸é ¸¶À»·Î º¹±Í
+	if (Now_scene == Scene_list[3] && clear_vsPokemon) // í¬ì¼“ëª¬ê³¼ ì „íˆ¬ë¥¼ ëë‚´ë©´ ë§ˆì„ë¡œ ë³µê·€
 	{
 		Now_scene = Scene_list[2];
 
@@ -80,7 +80,7 @@ void Program::Update()
 		Now_sound->Play();
 	}
 
-	if (Now_scene == Scene_list[2] && is_vsChampion) // ¸¶À» -> Ã¨ÇÇ¾ð°ú ÀüÅõ
+	if (Now_scene == Scene_list[2] && is_vsChampion) // ë§ˆì„ -> ì±”í”¼ì–¸ê³¼ ì „íˆ¬
 	{
 		Now_scene = Scene_list[4];
 
@@ -88,7 +88,7 @@ void Program::Update()
 		Now_sound = Sound_list[4];
 		Now_sound->Play();
 	}
-	if (Now_scene == Scene_list[4] && clear_vsChampion) // Ã¨ÇÇ¾ð°ú ÀüÅõ¸¦ ³¡³»¸é ¸¶À»·Î º¹±Í
+	if (Now_scene == Scene_list[4] && clear_vsChampion) // ì±”í”¼ì–¸ê³¼ ì „íˆ¬ë¥¼ ëë‚´ë©´ ë§ˆì„ë¡œ ë³µê·€
 	{
 		Now_scene = Scene_list[2];
 
@@ -97,7 +97,7 @@ void Program::Update()
 		Now_sound->Play();
 	}
 
-	// ¹Ø¿¡´Â ºü¸¥ ÀÛ¾÷À» À§ÇÑ ÄÚµå
+	// ë°‘ì—ëŠ” ë¹ ë¥¸ ìž‘ì—…ì„ ìœ„í•œ ì½”ë“œ
 	
 	if (KEY_CON->Down('R')) 
 	{
@@ -161,9 +161,9 @@ Program::~Program()
 	delete view;
 	delete projection;
 
-	for (auto s : Scene_list)
+	for (auto& s : Scene_list)
 		delete s;
-	for (auto s : Sound_list)
+	for (auto& s : Sound_list)
 		delete s;
 
 	Scene_list.clear();
@@ -186,9 +186,9 @@ void Program::Render()
 	string fps = "FPS : " + to_string(Timer::Get()->GetFPS());
 	ImGui::Text(fps.c_str());
 	ImGui::Text("Total Run Time : %f", Timer::Get()->GetRunTime());
-	ImGui::Text("Gender : %s (True : Boy, False : Girl)", gender ? "true" : "false");
-	//ImGui::Text("is Pokemon : %s", is_vsPokemon ? "true" : "false");
-	//ImGui::Text("Clear Pokemon : %s", clear_vsPokemon ? "true" : "false");
+	// ImGui::Text("Gender : %s (True : Boy, False : Girl)", gender ? "true" : "false");
+	// ImGui::Text("is Pokemon : %s", is_vsPokemon ? "true" : "false");
+	// ImGui::Text("Clear Pokemon : %s", clear_vsPokemon ? "true" : "false");
 
 	Now_scene->Render();
 	Now_scene->PostRender();
