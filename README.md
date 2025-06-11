@@ -25,33 +25,10 @@ https://github.com/user-attachments/assets/facaa310-cbd7-4edb-afc3-6f54613efaaf
 ### FMOD.     
 - 외부 라이브러리인 FMOD를 링크시키기 위해 fmod.inc를 프로젝트의 추가 디렉토리에, fmod.lib를 라이브러리 디렉토리에 연결을 시킴으로써 성공적으로 연동시켰습니다. 
 - FMOD_SYSTEM* Sound::g_System 이라는 객체로, 사운드 재생 및 일시 정지를 가능하게 합니다.    
-- 커스텀 Sound 클래스를 생성해, vector<Sound*> Sound_list라는 vector 자료구조로 사용할 브금들을 push하고 Scene이 바뀔 때 마다, Scene에 맞는 브금들을 재생합니다.
-```c++
-Sound::Sound(const char* file, bool loop)
-{
-	if (loop)
-		FMOD_System_CreateSound(g_System,file, FMOD_LOOP_NORMAL,NULL,&sound);
-	else
-		FMOD_System_CreateSound(g_System, file, FMOD_DEFAULT, NULL, &sound);
-
-	channel = nullptr;
-	volume = 0.5f;
-}
-```    
+- 커스텀 Sound 클래스를 생성해, vector<Sound*> Sound_list라는 vector 자료구조로 사용할 브금들을 push하고 Scene이 바뀔 때 마다, Scene에 맞는 브금들을 재생합니다.  
 ### ImGui.     
 - ImGui 윈도우를 통해 FPS, RunTime을 모니터링하며 특정 Scene에서는 플레이어의 좌표와 마우스 클릭좌표, 전투 상태 등 핵심 게임 데이터를 실시간으로 모니터링할 수 있도록 구현했습니다.     
-![KakaoTalk_20250605_195005060](https://github.com/user-attachments/assets/7b7bb69e-c6fd-4664-a248-09eb4e936c9b)
-```c++
-ImGui_ImplDX11_NewFrame();
-ImGui_ImplWin32_NewFrame();
-ImGui::NewFrame();
-
-string fps = "FPS : " + to_string(Timer::Get()->GetFPS());
-ImGui::Text(fps.c_str());
-ImGui::Text("Total Run Time : %f", Timer::Get()->GetRunTime());
-ImGui::Render();
-ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-```     
+![KakaoTalk_20250605_195005060](https://github.com/user-attachments/assets/7b7bb69e-c6fd-4664-a248-09eb4e936c9b)     
 - ImGui를 활용함으로써, 개발 중 예상치 못한 버그를 빠르게 진단하는데 유용했습니다.
 ### InGame.    
 > 영상에 나오는 Scene 순서대로 설명하겠으며, 전투Scene에 대해 중점적으로 기술하겠습니다.
