@@ -1,4 +1,4 @@
-#include "framework.h"
+﻿#include "framework.h"
 
 Pokemon::Pokemon(Vector2 pos, float x, float y, float w, float h, float attack, wstring file)
 {

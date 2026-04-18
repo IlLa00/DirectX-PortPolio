@@ -1,4 +1,4 @@
-#include "framework.h"
+﻿#include "framework.h"
 #include "Frame.h"
 
 Frame::Frame(wstring file, Vector2 startUV, Vector2 endUV)

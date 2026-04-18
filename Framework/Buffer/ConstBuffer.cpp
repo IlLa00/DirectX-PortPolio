@@ -1,4 +1,4 @@
-#include "framework.h"
+﻿#include "framework.h"
 
 ConstBuffer::ConstBuffer(void* data, UINT data_size)
 	: data(data), data_size(data_size)

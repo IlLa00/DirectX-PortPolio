@@ -1,9 +1,8 @@
-#include "framework.h"
-
+﻿#include "framework.h"
 
 unordered_map<wstring, VertexShader*> VertexShader::shader_data;
-void VertexShader::CreateInputLayout()
 
+void VertexShader::CreateInputLayout()
 {
     D3D11_INPUT_ELEMENT_DESC layouts[] =
     {
@@ -22,6 +21,7 @@ void VertexShader::CreateInputLayout()
     };
 
     UINT layoutSize;
+
     switch (type)
     {
     case 0: 
@@ -36,6 +36,7 @@ void VertexShader::CreateInputLayout()
         break;
     }
 }
+
 void VertexShader::CreateInputLayoutByPos()
 {
     D3DReflect(vertex_blob->GetBufferPointer(), vertex_blob->GetBufferSize(),
@@ -119,8 +120,6 @@ VertexShader::VertexShader(wstring file_loc, UINT type, DWORD flags)
         CreateInputLayoutByPos();
     else
         CreateInputLayout();
-
-
 }
 
 VertexShader::~VertexShader()
