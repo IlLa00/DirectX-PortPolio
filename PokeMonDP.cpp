@@ -7,17 +7,9 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
-HWND hWnd;
-HDC hdc;
-Vector2 mouse_pos(0,0);
-Vector2 mouse_click_pos(0, 0);
-bool gender;
-bool is_vsPokemon;
-bool is_vsChampion;
-bool clear_vsPokemon;
-bool clear_vsChampion;
-bool lose_vsPokemon;
-bool lose_vsChampion;
+HWND      hWnd;
+HDC       hdc;
+GameState g_state;
 
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
@@ -175,14 +167,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_MOUSEMOVE:
     {
-        mouse_pos.x = GET_X_LPARAM(lParam);
-        mouse_pos.y = GET_Y_LPARAM(lParam);
+        g_state.mouse_pos.x = (float)GET_X_LPARAM(lParam);
+        g_state.mouse_pos.y = (float)GET_Y_LPARAM(lParam);
     }
     break;
     case WM_LBUTTONDOWN:
     {
-        mouse_click_pos.x = mouse_pos.x;
-        mouse_click_pos.y = mouse_pos.y;
+        g_state.mouse_click_pos = g_state.mouse_pos;
     }
     break;
     case WM_PAINT:

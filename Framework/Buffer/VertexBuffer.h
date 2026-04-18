@@ -1,9 +1,9 @@
 #pragma once
-// Vertex(Á¤Á¡) Buffer - ¼ÎÀÌ´õ¿¡ Á¤Á¡ÀÇ µ¥ÀÌÅÍ¸¦ ³Ñ±æ ‹š »ç¿ëÇÏ·Á´Â ¿ëµµ·Î ¸¸µé¾îÁø Å¬·¡½º
+// Vertex(ï¿½ï¿½ï¿½ï¿½) Buffer - ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ñ±ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½ëµµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½
 class VertexBuffer
 {
 private:
-	ID3D11Buffer* buffer;
+	ID3D11Buffer* buffer = nullptr;
 	UINT stride;
 	UINT offset;
 

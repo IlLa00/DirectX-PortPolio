@@ -29,7 +29,7 @@ void HPBar::Render()
 	VS->Set();
 	PS->Set();
 
-	WB->SetVS(0);
+	wb->SetVS(0);
 	CB->SetPS(0);
 
 	bar->Render();

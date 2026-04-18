@@ -1,764 +1,384 @@
 #include "framework.h"
+#include "Data/PokemonData.h"
 
 BattleManager::BattleManager(bool mode)
-	: mode(mode)
+	: mode(mode), is_appearance(true), m_appear_step(0), change_turn(0)
 {
-	if (mode) // ¾ß»ýÆ÷ÄÏ¸ó°ú ÀüÅõÀÌ¸é
-	{
-		my_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X / 2, 420), 1621, 34, 80, 80)); // ÆØµµ¸®
-		my_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X / 2, 420), 2107, 34, 80, 80, 60.0f)); // ¿¥Æä¸£Æ®
-		my_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X / 2, 420), 2107, 2569, 80, 80, 80.0f)); // µð¾Æ·ç°¡
+	vector<unique_ptr<Pokemon>> my_box, en_box;
+	for (const auto& d : PokemonData::PLAYER)
+		my_box.push_back(make_unique<Pokemon>(
+			Vector2(WIN_CENTER_X / 2, 420), d.sx, d.sy, d.sw, d.sh, d.attack));
+	player_box = make_unique<PokemonBox>(std::move(my_box));
 
-		enemy_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X + 345, 305), 23, 250, 35, 39)); // Âî¸£²¿
-	}
-	else // Ã¨ÇÇ¾ð°ú ÀüÅõÀÌ¸é
-	{
-		my_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X / 2, 420), 1621, 34, 80, 80)); // ÆØµµ¸®
-		my_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X / 2, 420), 2107, 34, 80, 80, 60.0f)); // ¿¥Æä¸£Æ®
-		my_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X / 2, 420), 2107, 2569, 80, 80, 80.0f)); // µð¾Æ·ç°¡
-
-		enemy_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X + 345, 305), 244, 1594, 80, 80)); // È­°­µ¹
-		enemy_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X + 345, 285), 244, 619, 80, 80, 55.0f)); // ·ÎÁî·¹ÀÌµå
-		enemy_pokemon_box.push_back(new Pokemon(Vector2(WIN_CENTER_X + 345, 285), 1459, 1594, 80, 80, 60.0f)); // ÇÑÄ«¸®¾Æ½º
-	}
-	field_my_pokemon = my_pokemon_box[0];
-	field_my_pokemon->is_active = false;
-
-	field_enemy_pokemon = enemy_pokemon_box[0];
-	field_enemy_pokemon->is_active = false;
-
-	// ¸Å°³º¯¼ö·Î Æ÷Áö¼ÇÀ» ´Ù¸£°Ô ÁöÁ¤
-	player_status = new StatusBox(true); // ÇÃ·¹ÀÌ¾î »óÅÂÃ¢
-	enemy_status = new StatusBox(false); // Àû±º »óÅÂÃ¢
-
-	button = new SelectButton(); // »óÈ£ÀÛ¿ë ¹öÆ° °ø°Ý, È¸º¹, ±³Ã¼
-	button->is_active = false;
-
-	behavior = new BattleAnimation(mode); // ¾Ö´Ï¸ÞÀÌ¼Ç °ü¸®
-
-	turn = 0; // 0ÀÏ¶§ ÇÃ·¹ÀÌ¾î ÅÏ, 1ÀÏ¶§ »ó´ë¹æ ÅÏ
-	change_turn = 0; // Æ÷ÄÏ¸ó ±³Ã¼ÇÒ¶§ »ç¿ë
-
-	// ¿­°ÅÇüÀ¸·Î »óÈ£ÀÛ¿ë °ü¸®
-	attackState = ATTACK_START;
-	meditationState = MEDITATION_START;
-	changeState = CHANGE_START;
-
-	is_appearance = true; // true¸é µîÀå¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
-	is_attack = false;
-	is_recovery = false;
-	is_change = false;
-}
-
-BattleManager::~BattleManager()
-{
-	for (auto b : my_pokemon_box)
-		delete b;
-	my_pokemon_box.clear();
-
-	for (auto b : enemy_pokemon_box)
-		delete b;
-	enemy_pokemon_box.clear();
-
-	delete player_status;
-	delete enemy_status;
-
-	delete button;
-
-	delete behavior;
-}
-
-void BattleManager::Appearance() // µîÀå
-{
-	if (mode) // ¾ß»ýÆ÷ÄÏ¸ó°ú ÀüÅõÀÏ ¶§
-	{
-		behavior->GetPlayer()->SetGender(gender); // ÇÃ·¹ÀÌ¾î ¼ºº° ¼³Á¤
-
-		switch (turn)
-		{
-		case 0:
-			behavior->GetAppearance()->Update(0); // Âî¸£²¿ µîÀå¸ð¼Ç
-			behavior->GetPlayer()->Update(0); // ÇÃ·¹ÀÌ¾î ºÎµ¿ÀÚ¼¼
-			if (behavior->GetAppearance()->GetClips()[0]->isPlay() == false)
-				turn++;
-			break;
-		case 1:
-			field_enemy_pokemon->is_active = true;
-			field_enemy_pokemon->Update();
-
-			enemy_status->pos = Vector2(WIN_CENTER_X - 380, 200);
-			enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
-			enemy_status->Update();
-
-			behavior->GetPlayer()->Update(1); // ÇÃ·¹ÀÌ¾î Æ÷ÄÏ¸ó ¼ÒÈ¯
-			if (behavior->GetPlayer()->GetClips()[1]->isPlay() == false)  // ÇÃ·¹ÀÌ¾î Æ÷ÄÏ¸ó ¼ÒÈ¯ÀÌ ³¡³ª¸é
-				turn++;
-			break;
-		case 2:
-			behavior->GetPokeball()->Update(0); // Æ÷ÄÏº¼ µîÀå
-			if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false) // Æ÷ÄÏº¼ µîÀåÀÌ ³¡³ª¸é
-				turn++;
-			break;
-		case 3:
-			field_my_pokemon->is_active = true; // ÆØµµ¸® Ãâ·Â
-			field_my_pokemon->Update();
-
-			player_status->pos = Vector2(WIN_CENTER_X + 360, 450);
-			player_status->SetHPBar(field_my_pokemon->GetHP());
-			player_status->SetCurrentHP(field_my_pokemon->GetHP());
-			player_status->Update();
-
-			turn = 0;
-			is_appearance = false; // ¸ðµç µîÀåÀÌ ³¡³²
-			break;
+	if (mode) {
+		for (const auto& d : PokemonData::VS_POKEMON_ENEMY)
+			en_box.push_back(make_unique<Pokemon>(
+				Vector2(WIN_CENTER_X + 345, 305), d.sx, d.sy, d.sw, d.sh, d.attack));
+	} else {
+		for (int i = 0; i < 3; ++i) {
+			const auto& d = PokemonData::VS_CHAMPION_ENEMY[i];
+			float py = (i == 0) ? 305.0f : 285.0f;
+			en_box.push_back(make_unique<Pokemon>(
+				Vector2(WIN_CENTER_X + 345, py), d.sx, d.sy, d.sw, d.sh, d.attack));
 		}
 	}
-	else // Ã¨ÇÇ¾ð°ú ÀüÅõÁßÀÌ¸é
-	{
-		behavior->GetPlayer()->SetGender(gender);
+	enemy_box = make_unique<PokemonBox>(std::move(en_box));
 
-		switch (turn)
-		{
+	player_box->GetField()->is_active = false;
+	enemy_box->GetField()->is_active  = false;
+
+	player_status = make_unique<StatusBox>(true,  g_state, mode);
+	enemy_status  = make_unique<StatusBox>(false, g_state, mode);
+
+	button = make_unique<SelectButton>();
+	button->is_active = false;
+
+	behavior     = make_unique<BattleAnimation>(mode);
+	action_proc  = make_unique<ActionProcessor>(behavior.get());
+}
+
+BattleManager::~BattleManager() {}
+
+// â”€â”€â”€ Skill slot mapping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+UINT BattleManager::GetPlayerSkillSlot() const {
+	static const UINT MAP[] = { 0, 3, 5 };
+	return MAP[player_box->GetFieldIndex()];
+}
+
+UINT BattleManager::GetEnemySkillSlot() const {
+	if (mode) return 1;
+	static const UINT MAP[] = { 1, 2, 4 };
+	return MAP[enemy_box->GetFieldIndex()];
+}
+
+// â”€â”€â”€ Appearance (intro animation) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::Appearance() {
+	if (mode) {
+		behavior->GetPlayer()->SetGender(g_state.gender);
+		switch (m_appear_step) {
+		case 0:
+			behavior->GetAppearance()->Update(0);
+			behavior->GetPlayer()->Update(0);
+			if (!behavior->GetAppearance()->GetClips()[0]->isPlay()) m_appear_step++;
+			break;
+		case 1:
+			enemy_box->GetField()->is_active = true;
+			enemy_box->GetField()->Update();
+			enemy_status->pos = Vector2(WIN_CENTER_X - 380, 200);
+			enemy_status->SetHPBar(enemy_box->GetField()->GetHP());
+			enemy_status->SetIsStatus(true);
+			enemy_status->Update();
+			behavior->GetPlayer()->Update(1);
+			if (!behavior->GetPlayer()->GetClips()[1]->isPlay()) m_appear_step++;
+			break;
+		case 2:
+			behavior->GetPokeball()->Update(0);
+			if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) m_appear_step++;
+			break;
+		case 3:
+			player_box->GetField()->is_active = true;
+			player_box->GetField()->Update();
+			player_status->pos = Vector2(WIN_CENTER_X + 360, 450);
+			player_status->SetHPBar(player_box->GetField()->GetHP());
+			player_status->SetCurrentHP(player_box->GetField()->GetHP());
+			player_status->SetIsStatus(true);
+			player_status->Update();
+			m_appear_step = 0;
+			is_appearance = false;
+			break;
+		}
+	} else {
+		behavior->GetPlayer()->SetGender(g_state.gender);
+		switch (m_appear_step) {
 		case 0:
 			behavior->GetChampion()->Update();
 			behavior->GetPlayer()->Update(0);
 			behavior->GetChampion()->pos.x += 250.0f * DELTA;
-			if (behavior->GetChampion()->pos.x >= 1350)
-				turn++;
+			if (behavior->GetChampion()->pos.x >= 1350) m_appear_step++;
 			break;
 		case 1:
-			behavior->GetPokeball()->Update(1); // »ó´ë¹æÀÌ Æ÷ÄÏº¼À» ´øÁü
-			if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-				turn++;
+			behavior->GetPokeball()->Update(1);
+			if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) m_appear_step++;
 			break;
 		case 2:
 			behavior->GetAppearance()->Update(1);
-
-			if (behavior->GetAppearance()->GetClips()[1]->isPlay() == false)
-				turn++;
+			if (!behavior->GetAppearance()->GetClips()[1]->isPlay()) m_appear_step++;
 			break;
 		case 3:
-			behavior->GetPlayer()->SetGender(gender);
+			behavior->GetPlayer()->SetGender(g_state.gender);
 			behavior->GetPlayer()->Update(1);
-
-			field_enemy_pokemon->is_active = true;
-			field_enemy_pokemon->Update();
-
+			enemy_box->GetField()->is_active = true;
+			enemy_box->GetField()->Update();
 			enemy_status->pos = Vector2(WIN_CENTER_X - 380, 200);
-			enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
+			enemy_status->SetHPBar(enemy_box->GetField()->GetHP());
+			enemy_status->SetIsStatus(true);
 			enemy_status->Update();
-
-			if (behavior->GetPlayer()->GetClips()[1]->isPlay() == false) // ÇÃ·¹ÀÌ¾î ¸ð¼ÇÀÌ ³¡³ª¸é
-				turn++;
+			if (!behavior->GetPlayer()->GetClips()[1]->isPlay()) m_appear_step++;
 			break;
 		case 4:
-			if(behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-				behavior->GetPokeball()->GetClips()[0]->Play(); 
-			behavior->GetPokeball()->Update(0); 
-			if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-				turn++;
+			if (!behavior->GetPokeball()->GetClips()[0]->isPlay())
+				behavior->GetPokeball()->GetClips()[0]->Play();
+			behavior->GetPokeball()->Update(0);
+			if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) m_appear_step++;
 			break;
 		case 5:
-			field_my_pokemon->is_active = true;
-			field_my_pokemon->Update();
-
+			player_box->GetField()->is_active = true;
+			player_box->GetField()->Update();
 			player_status->pos = Vector2(WIN_CENTER_X + 360, 450);
-			player_status->SetHPBar(field_enemy_pokemon->GetHP());
-			player_status->SetCurrentHP(field_my_pokemon->GetHP());
+			player_status->SetHPBar(player_box->GetField()->GetHP());
+			player_status->SetCurrentHP(player_box->GetField()->GetHP());
+			player_status->SetIsStatus(true);
 			player_status->Update();
-
-			turn = 0;
-			is_appearance = false; // ¸ðµç µîÀåÀÌ ³¡³²
+			m_appear_step = 0;
+			is_appearance = false;
 			break;
 		}
 	}
 }
 
-void BattleManager::Update()
-{
-	if (is_appearance)
-		Appearance(); // µîÀå ¸ð¼Ç Àç»ý
-	else
-	{
-		if (is_appearance || is_attack || is_recovery || is_change) // Çàµ¿ ÁßÀÌ¸é Çàµ¿ ¹öÆ°ÀÌ È°¼ºÈ­ µÇÁö ¾ÊÀ½
-			button->is_active = false;
+// â”€â”€â”€ Status box sync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::SyncStatusBoxes() {
+	player_status->SetStatus(player_box->GetFieldIndex());
+	enemy_status->SetStatus(enemy_box->GetFieldIndex());
+}
+
+// â”€â”€â”€ Fainted handling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::HandlePlayerFainted() {
+	if (turn_state.phase == ActionPhase::Attack) {
+		turn_state.EndAction();
+		action_proc->ResetAttack();
+	}
+	g_state.mouse_click_pos = Vector2(0, 0);
+	turn_state.BeginAction(ActionPhase::Change);
+
+	player_box->GetField()->SetIsSurvive(false);
+	player_box->GetField()->Collapses();
+
+	if (player_box->GetField()->pos.x <= 0) {
+		player_status->SetIsStatus(false);
+
+		if (player_box->AllFainted()) {
+			if (mode) {
+				g_state.lose_vsPokemon  = true;
+				g_state.clear_vsPokemon = true;
+			} else {
+				g_state.lose_vsChampion  = true;
+				g_state.clear_vsChampion = true;
+			}
+		}
+
+		if (!behavior->GetPokeball()->GetClips()[0]->isPlay())
+			behavior->GetPokeball()->GetClips()[0]->Play();
+		behavior->GetPokeball()->Update(0);
+
+		if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) {
+			player_status->SetIsStatus(true);
+			if (player_box->SwitchToNext()) {
+				player_status->SetHPBar(player_box->GetField()->GetHP());
+				player_status->SetCurrentHP(player_box->GetField()->GetHP());
+				if (player_box->GetField()->pos.x != WIN_CENTER_X / 2)
+					player_box->GetField()->pos.x = WIN_CENTER_X / 2;
+				turn_state.EndAction();
+			}
+		}
+	}
+}
+
+void BattleManager::HandleEnemyFainted() {
+	if (turn_state.phase == ActionPhase::Attack) {
+		turn_state.EndAction();
+		action_proc->ResetAttack();
+	}
+	g_state.mouse_click_pos = Vector2(0, 0);
+	turn_state.BeginAction(ActionPhase::Change);
+
+	enemy_box->GetField()->SetIsSurvive(false);
+	enemy_box->GetField()->Collapses();
+
+	if (enemy_box->GetField()->pos.x >= WIN_WIDTH) {
+		enemy_status->SetIsStatus(false);
+
+		if (mode) {
+			g_state.clear_vsPokemon = true;
+			return;
+		}
+
+		if (enemy_box->AllFainted())
+			g_state.clear_vsChampion = true;
+
+		switch (change_turn) {
+		case 0:
+			if (!behavior->GetPokeball()->GetClips()[0]->isPlay())
+				behavior->GetPokeball()->GetClips()[0]->Play();
+			behavior->GetPokeball()->Update(1);
+			if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) {
+				enemy_status->SetIsStatus(true);
+				change_turn++;
+			}
+			break;
+		case 1:
+		{
+			int cur = enemy_box->GetFieldIndex();
+			int next = -1;
+			if (cur == 0 && enemy_box->GetPokemon(1)->GetIsSurvive()) next = 1;
+			else if (cur == 1 && enemy_box->GetPokemon(2)->GetIsSurvive()) next = 2;
+			else if (cur == 2 && enemy_box->GetPokemon(0)->GetIsSurvive()) next = 0;
+
+			int animSlot = (next == 1) ? 2 : (next == 2) ? 3 : 1;
+			if (next >= 0) {
+				behavior->GetAppearance()->Update(animSlot);
+				if (!behavior->GetAppearance()->GetClips()[animSlot]->isPlay()) {
+					enemy_box->SwitchToNext();
+					enemy_status->SetHPBar(enemy_box->GetField()->GetHP());
+					enemy_box->GetField()->pos.x = WIN_CENTER_X + 345;
+					change_turn = 0;
+					turn_state.EndAction();
+				}
+			}
+			break;
+		}
+		}
+	}
+}
+
+// â”€â”€â”€ Player input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::ProcessPlayerInput() {
+	const Vector2& click = g_state.mouse_click_pos;
+
+	if (click.x > 22 && click.x < 405 && click.y > 560 && click.y < 726) {
+		turn_state.BeginAction(ActionPhase::Attack);
+	} else if (click.x > 440 && click.x < 840 && click.y > 560 && click.y < 726) {
+		if (player_box->GetField()->GetHP() < 100)
+			turn_state.BeginAction(ActionPhase::Recovery);
 		else
-			button->is_active = true;
-
-		// »óÅÂÃ¢ °ü¸®
-		if (field_my_pokemon == my_pokemon_box[0])
-			player_status->SetStatus(0);
-		else if (field_my_pokemon == my_pokemon_box[1])
-			player_status->SetStatus(1);
-		else if (field_my_pokemon == my_pokemon_box[2])
-			player_status->SetStatus(2);
-
-		if (field_enemy_pokemon == enemy_pokemon_box[0])
-			enemy_status->SetStatus(0);
-		else if (field_enemy_pokemon == enemy_pokemon_box[1])
-			enemy_status->SetStatus(1);
-		else if (field_enemy_pokemon == enemy_pokemon_box[2])
-			enemy_status->SetStatus(2);
-		else if (field_enemy_pokemon == enemy_pokemon_box[3])
-			enemy_status->SetStatus(3);
-
-		player_status->Update();
-		enemy_status->Update();
-
-		if (field_my_pokemon->GetHP() <= 0) // ÇÃ·¹ÀÌ¾î Æ÷ÄÏ¸ó Ã¼·Â °Ë»ç
-		{
-			if (is_attack)
-				is_attack = false;
-
-			mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-			attackState = ATTACK_START;
-
-			is_change = true;
-
-			if (is_change)
-			{
-				field_my_pokemon->SetIsSurvive(false);
-				field_my_pokemon->Collapses();
-				
-				if (field_my_pokemon->pos.x <= 0)
-				{
-					player_status->SetIsStatus(false);
-
-					if (!my_pokemon_box[0]->GetIsSurvive() && !my_pokemon_box[1]->GetIsSurvive() && !my_pokemon_box[2]->GetIsSurvive())
-					{
-						if (mode)
-						{
-							lose_vsPokemon = true;  // ¾Æ±º Æ÷ÄÏ¸óÀÌ ¸ðµÎ ¾²·¯Á³À¸¸é °ÔÀÓ ÆÐ¹è, ÀÌ °æ¿ì ´Ù½Ã ÀçµµÀü °¡´É
-							clear_vsPokemon = true;
-						}
-						else
-						{
-							lose_vsChampion = true;  // ¾Æ±º Æ÷ÄÏ¸óÀÌ ¸ðµÎ ¾²·¯Á³À¸¸é °ÔÀÓ ÆÐ¹è, ÀÌ °æ¿ì ´Ù½Ã ÀçµµÀü °¡´É
-							clear_vsChampion = true;
-						}
-					}
-
-					if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-						behavior->GetPokeball()->GetClips()[0]->Play(); // ´Ù½Ã Àç»ýÇÏ±â À§ÇÑ ÀÛ¾÷	
-					behavior->GetPokeball()->Update(0);
-					if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-					{
-						player_status->SetIsStatus(true);
-
-						UINT current_index = -1; // ÇöÀç Æ÷ÄÏ¸óÀÇ ÀÎµ¦½º¸¦ Ã£±â
-
-						for (int i = 0; i < 3; ++i)
-						{
-							if (field_my_pokemon == my_pokemon_box[i])
-							{
-								current_index = i;
-								break;
-							}
-						}
-
-						for (int i = 1; i < 3; ++i)
-						{
-							int next_index = (current_index + i) % 3;
-							if (my_pokemon_box[next_index]->GetIsSurvive() == true)
-							{
-								field_my_pokemon = my_pokemon_box[next_index];
-								player_status->SetHPBar(field_my_pokemon->GetHP());
-								player_status->SetCurrentHP(field_my_pokemon->GetHP());
-								if (field_my_pokemon->pos.x != WIN_CENTER_X / 2)
-									field_my_pokemon->pos.x = WIN_CENTER_X / 2;
-								is_change = false;
-								break;
-							}
-						}
-					}
-				}
+			g_state.mouse_click_pos = Vector2(0, 0);
+	} else if (click.x > 875 && click.x < 1255 && click.y > 560 && click.y < 726) {
+		bool can_change = false;
+		for (int i = 0; i < player_box->GetSize(); ++i) {
+			if (player_box->GetPokemon(i) != player_box->GetField() &&
+				player_box->GetPokemon(i)->GetIsSurvive()) {
+				can_change = true; break;
 			}
 		}
-		
-
-		if (field_enemy_pokemon->GetHP() <= 0) // »ó´ë¹æ Æ÷ÄÏ¸ó Ã¼·Â °Ë»ç
-		{
-			if (is_attack)
-				is_attack = false;
-
-			mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-			attackState = ATTACK_START;
-
-			is_change = true;
-			if (is_change)
-			{
-				field_enemy_pokemon->SetIsSurvive(false);
-				field_enemy_pokemon->Collapses();
-
-				if (field_enemy_pokemon->pos.x >= WIN_WIDTH)
-				{
-					enemy_status->SetIsStatus(false);
-
-					if (mode) // ¾ß»ýÆ÷ÄÏ¸ó°ú ÀüÅõ¿´´Ù¸é ¹Ù·Î ½Â¸®
-						clear_vsPokemon = true; // Æ÷ÄÏ¸ó°úÀÇ ÀüÅõ¾À Å»Ãâ
-					else // Ã¨ÇÇ¾ð°ú ÀüÅõ¶ó¸é
-					{
-						if (!enemy_pokemon_box[0]->GetIsSurvive() && !enemy_pokemon_box[1]->GetIsSurvive() && !enemy_pokemon_box[2]->GetIsSurvive())
-							clear_vsChampion = true; // »ó´ë¹æ Æ÷ÄÏ¸óÀÌ ¸ðµÎ ¾²·¯Á³À¸¸é °ÔÀÓ ½Â¸®
-
-						switch (change_turn)
-						{
-						case 0:
-							if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-								behavior->GetPokeball()->GetClips()[0]->Play(); 
-							behavior->GetPokeball()->Update(1);
-							if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-							{
-								enemy_status->SetIsStatus(true);
-								change_turn++;
-							}
-								
-							break;
-						case 1:
-							if (field_enemy_pokemon == enemy_pokemon_box[0] && enemy_pokemon_box[1]->GetIsSurvive() == true)  
-								// È­°­µ¹ÀÌ Á×¾úÀ¸¸é ·ÎÁî·¹ÀÌµå ¼ÒÈ¯
-							{
-								behavior->GetAppearance()->Update(2);
-								if (behavior->GetAppearance()->GetClips()[2]->isPlay() == false)
-								{
-									field_enemy_pokemon = enemy_pokemon_box[1];
-									enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
-									field_enemy_pokemon->pos.x = WIN_CENTER_X + 345;
-									change_turn = 0;
-									is_change = false;
-									break;
-								}
-							}
-							else if (field_enemy_pokemon == enemy_pokemon_box[1] && enemy_pokemon_box[2]->GetIsSurvive() == true) 
-								// ·ÎÁî·¹ÀÌµå°¡ Á×¾úÀ¸¸é ÇÑÄ«¸®¾Æ½º ¼ÒÈ¯
-							{
-								behavior->GetAppearance()->Update(3);
-								if (behavior->GetAppearance()->GetClips()[3]->isPlay() == false)
-								{
-									field_enemy_pokemon = enemy_pokemon_box[2];
-									enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
-									field_enemy_pokemon->pos.x = WIN_CENTER_X + 345;
-									change_turn = 0;
-									is_change = false;
-									break;
-								}
-							}
-							else if (field_enemy_pokemon == enemy_pokemon_box[2] && enemy_pokemon_box[0]->GetIsSurvive() == true)
-								// ÇÑÄ«¸®¾Æ½º°¡ Á×¾úÀ¸¸é È­°­µ¹ ¼ÒÈ¯
-							{
-								behavior->GetAppearance()->Update(1);
-								if (behavior->GetAppearance()->GetClips()[1]->isPlay() == false)
-								{
-									field_enemy_pokemon = enemy_pokemon_box[0];
-									enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
-									field_enemy_pokemon->pos.x = WIN_CENTER_X + 345;
-									change_turn = 0;
-									is_change = false;
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	
-		
-
-		switch (turn)
-		{
-		case 0: // ÇÃ·¹ÀÌ¾îÀÇ ÅÏ
-			if (mouse_click_pos.x > 22 && mouse_click_pos.x < 405 && mouse_click_pos.y > 560 && mouse_click_pos.y < 726) // °ø°Ý¹öÆ° Å¬¸¯½Ã
-			{
-				is_attack = true;
-
-				if (is_attack)
-				{
-					if (field_my_pokemon == my_pokemon_box[0]) // ÇöÀç ³ªÀÇ ÇÊµåÆ÷ÄÏ¸óÀÌ ÆØµµ¸®¸é
-					{
-						switch (attackState)
-						{
-						case ATTACK_START:
-							if (!behavior->GetSkill()->GetClips()[0]->isPlay())
-								behavior->GetSkill()->GetClips()[0]->Play();
-							attackState = ATTACK_ANIMATION;
-							break;
-						case ATTACK_ANIMATION:
-							behavior->GetSkill()->Update(0);
-							if (!behavior->GetSkill()->GetClips()[0]->isPlay())
-								attackState = ATTACK_DAMAGE;
-							break;
-						case ATTACK_DAMAGE:
-							field_my_pokemon->Attack(field_enemy_pokemon);
-							enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
-							if (field_enemy_pokemon->GetHP() > 0)
-							{
-								attackState = ATTACK_START;
-								turn++; // »ó´ë¹æÀÇ ÅÏ ½ÃÀÛ
-							}
-							else
-								attackState = ATTACK_END;
-							break;
-						case ATTACK_END:
-							attackState = ATTACK_START; // »óÅÂ ÃÊ±âÈ­
-							break;
-						}
-					}
-
-					if (field_my_pokemon == my_pokemon_box[1]) //  ÇöÀç ³ªÀÇ ÇÊµåÆ÷ÄÏ¸óÀÌ ¿¥Æä¸£Æ®¸é
-					{
-						switch (attackState)
-						{
-						case ATTACK_START:
-							if (!behavior->GetSkill()->GetClips()[3]->isPlay())
-								behavior->GetSkill()->GetClips()[3]->Play();
-							attackState = ATTACK_ANIMATION;
-							break;
-						case ATTACK_ANIMATION:
-							behavior->GetSkill()->Update(3);
-							if (!behavior->GetSkill()->GetClips()[3]->isPlay())
-								attackState = ATTACK_DAMAGE;
-							break;
-						case ATTACK_DAMAGE:
-							field_my_pokemon->Attack(field_enemy_pokemon);
-							enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
-							if (field_enemy_pokemon->GetHP() > 0)
-							{
-								attackState = ATTACK_START;
-								turn++; // »ó´ë¹æÀÇ ÅÏ ½ÃÀÛ
-							}
-							else
-								attackState = ATTACK_END;
-							break;
-						case ATTACK_END:
-							attackState = ATTACK_START; // »óÅÂ ÃÊ±âÈ­
-							break;
-						}
-					}
-					if (field_my_pokemon == my_pokemon_box[2]) //  ÇöÀç ³ªÀÇ ÇÊµåÆ÷ÄÏ¸óÀÌ µð¾Æ·ç°¡¸é
-					{
-						switch (attackState)
-						{
-						case ATTACK_START:
-							if (!behavior->GetSkill()->GetClips()[5]->isPlay())
-								behavior->GetSkill()->GetClips()[5]->Play();
-							attackState = ATTACK_ANIMATION;
-							break;
-						case ATTACK_ANIMATION:
-							behavior->GetSkill()->Update(5);
-							if (!behavior->GetSkill()->GetClips()[5]->isPlay())
-								attackState = ATTACK_DAMAGE;
-							break;
-						case ATTACK_DAMAGE:
-							field_my_pokemon->Attack(field_enemy_pokemon);
-							enemy_status->SetHPBar(field_enemy_pokemon->GetHP());
-							if (field_enemy_pokemon->GetHP() > 0)
-							{
-								attackState = ATTACK_START;
-								turn++; // »ó´ë¹æÀÇ ÅÏ ½ÃÀÛ
-							}
-							else
-								attackState = ATTACK_END;
-							break;
-						case ATTACK_END:
-							attackState = ATTACK_START; // »óÅÂ ÃÊ±âÈ­
-							break;
-						}
-					}
-				}
-			}
-			else if (mouse_click_pos.x > 440 && mouse_click_pos.x < 840 && mouse_click_pos.y > 560 && mouse_click_pos.y < 726) // Ã¼·ÂÈ¸º¹
-			{
-				if (field_my_pokemon->GetHP() < 100)
-				{
-					is_recovery = true;
-
-					if (is_recovery)
-					{
-						switch (meditationState)
-						{
-						case MEDITATION_START:
-							if (!behavior->GetMeditation()->GetClips()[0]->isPlay())
-								behavior->GetMeditation()->GetClips()[0]->Play(); // ´Ù½Ã Àç»ýÇÏ±â À§ÇÑ ÀÛ¾÷
-							meditationState = MEDITATION_ANIMATION;
-							break;
-						case MEDITATION_ANIMATION:
-							behavior->GetMeditation()->Update();
-							if (!behavior->GetMeditation()->GetClips()[0]->isPlay())
-								meditationState = MEDITATION_RECOVERY;
-							break;
-						case MEDITATION_RECOVERY:
-							field_my_pokemon->Recovery();
-							player_status->SetHPBar(field_my_pokemon->GetHP());
-							player_status->SetCurrentHP(field_my_pokemon->GetHP());
-							meditationState = MEDITATION_START;
-							turn++; // ÇÃ·¹ÀÌ¾îÀÇ ÅÏ Á¾·á
-							break;
-						}
-					}
-				}
-				else // Ç®ÇÇÀÎ »óÅÂ¶ó¼­ ½ÇÇàÇÏÁö ¾ÊÀ½
-					mouse_click_pos = Vector2(0, 0);
-			}
-			else if (mouse_click_pos.x > 875 && mouse_click_pos.x < 1255 && mouse_click_pos.y > 560 && mouse_click_pos.y < 726) // Æ÷ÄÏ¸ó ±³Ã¼
-			{
-				for (auto p : my_pokemon_box) // ÇöÀç ÇÊµå Æ÷ÄÏ¸ó¸¸ »ì¾ÆÀÖÀ¸¸é ±³Ã¼¸¦ ÇÏÁö¸øÇÏ´Ï °Ë»ç
-				{
-					if (p == field_my_pokemon)
-						continue;
-					if (p->GetIsSurvive())
-					{
-						is_change = true;
-						break;
-					}
-				}
-
-				if (is_change)
-				{
-					field_my_pokemon->Collapses();
-
-					if (field_my_pokemon->pos.x <= 0)
-					{
-						player_status->SetIsStatus(false);
-
-						if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-							behavior->GetPokeball()->GetClips()[0]->Play(); // ´Ù½Ã Àç»ýÇÏ±â À§ÇÑ ÀÛ¾÷	
-						behavior->GetPokeball()->Update(0);
-						if (behavior->GetPokeball()->GetClips()[0]->isPlay() == false)
-						{
-							player_status->SetIsStatus(true);
-
-							int current_index = -1; // ÇöÀç Æ÷ÄÏ¸óÀÇ ÀÎµ¦½º¸¦ Ã£±â
-
-							for (int i = 0; i < 3; ++i)
-							{
-								if (field_my_pokemon == my_pokemon_box[i])
-								{
-									current_index = i;
-									break;
-								}
-							}
-
-							for (int i = 1; i < 3; ++i)
-							{
-								int next_index = (current_index + i) % 3;
-								if (my_pokemon_box[next_index]->GetIsSurvive() == true)
-								{
-									field_my_pokemon = my_pokemon_box[next_index];
-									player_status->SetHPBar(field_my_pokemon->GetHP());
-									player_status->SetCurrentHP(field_my_pokemon->GetHP());
-									if (field_my_pokemon->pos.x != WIN_CENTER_X / 2)
-										field_my_pokemon->pos.x = WIN_CENTER_X / 2;
-									break;
-								}
-							}
-							turn++; // ÇÃ·¹ÀÌ¾îÀÇ ÅÏ Á¾·á
-							break;
-						}
-					}
-				}
-				
-			}
-			break;
-		case 1: // »ó´ë¹æÀÇ ÅÏ
-			if (mode) // ¾ß»ýÆ÷ÄÏ¸ó°ú ÀüÅõ
-			{
-				switch (attackState)
-				{
-				case ATTACK_START:
-					if (behavior->GetSkill()->GetClips()[1]->isPlay() == false)
-						behavior->GetSkill()->GetClips()[1]->Play();
-					attackState = ATTACK_ANIMATION;
-					break;
-				case ATTACK_ANIMATION:
-					behavior->GetSkill()->Update(1);  // Âî¸£²¿ÀÇ °ø°Ý ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
-					if (behavior->GetSkill()->GetClips()[1]->isPlay() == false)
-						attackState = ATTACK_DAMAGE;
-					break;
-				case ATTACK_DAMAGE:
-					field_enemy_pokemon->Attack(field_my_pokemon);
-					player_status->SetHPBar(field_my_pokemon->GetHP());
-					player_status->SetCurrentHP(field_my_pokemon->GetHP());
-					if (field_my_pokemon->GetHP() <= 0) // ÇÃ·¹ÀÌ¾îÀÇ Ã¼·ÂÀÌ 0ÀÌ¸é
-					{
-						if (is_attack)
-							is_attack = false;
-						if (is_recovery)
-							is_recovery = false;
-						if (is_change)
-							is_change = false;
-						attackState = ATTACK_START;
-						turn--;
-						mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-						break;
-					}
-				case ATTACK_END:
-					if (is_attack)
-						is_attack = false;
-					else if (is_recovery)
-						is_recovery = false;
-					else if (is_change)
-						is_change = false;
-					turn--;
-					attackState = ATTACK_START;
-					mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-					break;
-				}
-			}
-			else // Ã¨ÇÇ¾ð°ú ÀüÅõÁßÀÌ¸é
-			{
-				if (field_enemy_pokemon == enemy_pokemon_box[0]) // ÇöÀç È­°­µ¹ÀÌ¸é
-				{
-					switch (attackState)
-					{
-					case ATTACK_START:
-						if (!behavior->GetSkill()->GetClips()[1]->isPlay())
-							behavior->GetSkill()->GetClips()[1]->Play();
-						attackState = ATTACK_ANIMATION;
-						break;
-					case ATTACK_ANIMATION:
-						behavior->GetSkill()->Update(1);
-						if (!behavior->GetSkill()->GetClips()[1]->isPlay())
-							attackState = ATTACK_DAMAGE;
-						break;
-					case ATTACK_DAMAGE:
-						field_enemy_pokemon->Attack(field_my_pokemon);
-						player_status->SetHPBar(field_my_pokemon->GetHP());
-						player_status->SetCurrentHP(field_my_pokemon->GetHP());
-						if (field_my_pokemon->GetHP() <= 0)
-						{
-							if (is_attack)
-								is_attack = false;
-							if (is_recovery)
-								is_recovery = false;
-							if (is_change)
-								is_change = false;
-							attackState = ATTACK_START;
-							turn--;
-							mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-							break;
-						}
-						attackState = ATTACK_END;
-						break;
-					case ATTACK_END:
-						if (is_attack)
-							is_attack = false;
-						if (is_recovery)
-							is_recovery = false;
-						if (is_change)
-							is_change = false;
-						attackState = ATTACK_START;
-						turn--;
-						mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-						break;
-					}
-				}
-				if (field_enemy_pokemon == enemy_pokemon_box[1]) // ÇöÀç ·ÎÁî·¹ÀÌµåÀÌ¸é
-				{
-					switch (attackState)
-					{
-					case ATTACK_START:
-						if (!behavior->GetSkill()->GetClips()[2]->isPlay())
-							behavior->GetSkill()->GetClips()[2]->Play();
-						attackState = ATTACK_ANIMATION;
-						break;
-					case ATTACK_ANIMATION:
-						behavior->GetSkill()->Update(2);
-						if (!behavior->GetSkill()->GetClips()[2]->isPlay())
-							attackState = ATTACK_DAMAGE;
-						break;
-					case ATTACK_DAMAGE:
-						field_enemy_pokemon->Attack(field_my_pokemon);
-						player_status->SetHPBar(field_my_pokemon->GetHP());
-						player_status->SetCurrentHP(field_my_pokemon->GetHP());
-						if (field_my_pokemon->GetHP() <= 0)
-						{
-							if (is_attack)
-								is_attack = false;
-							if (is_recovery)
-								is_recovery = false;
-							if (is_change)
-								is_change = false;
-							attackState = ATTACK_START;
-							turn--;
-							mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-							break;
-						}
-						attackState = ATTACK_END;
-						break;
-					case ATTACK_END:
-						if (is_attack)
-							is_attack = false;
-						else if (is_recovery)
-							is_recovery = false;
-						else if (is_change)
-							is_change = false;
-						attackState = ATTACK_START;
-						turn--;
-						mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-						break;
-					}
-				}
-				if (field_enemy_pokemon == enemy_pokemon_box[2]) // ÇöÀç ÇÑÄ«¸®¾Æ½º¸é
-				{
-					switch (attackState)
-					{
-					case ATTACK_START:
-						if (!behavior->GetSkill()->GetClips()[4]->isPlay())
-							behavior->GetSkill()->GetClips()[4]->Play();
-						attackState = ATTACK_ANIMATION;
-						break;
-					case ATTACK_ANIMATION:
-						behavior->GetSkill()->Update(4);
-						if (!behavior->GetSkill()->GetClips()[4]->isPlay())
-							attackState = ATTACK_DAMAGE;
-						break;
-					case ATTACK_DAMAGE:
-						field_enemy_pokemon->Attack(field_my_pokemon);
-						player_status->SetHPBar(field_my_pokemon->GetHP());
-						player_status->SetCurrentHP(field_my_pokemon->GetHP());
-						if (field_my_pokemon->GetHP() <= 0)
-						{
-							if (is_attack)
-								is_attack = false;
-							if (is_recovery)
-								is_recovery = false;
-							if (is_change)
-								is_change = false;
-							attackState = ATTACK_START;
-							turn--;
-							mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-							break;
-						}						attackState = ATTACK_END;
-						break;
-					case ATTACK_END:
-						if (is_attack)
-							is_attack = false;
-						else if (is_recovery)
-							is_recovery = false;
-						else if (is_change)
-							is_change = false;
-						attackState = ATTACK_START;
-						turn--;
-						mouse_click_pos = Vector2(0, 0); // ¸¶¿ì½º Å¬¸¯ ÃÊ±âÈ­
-						break;
-					}
-				}
-			}
-		}
+		if (can_change) turn_state.BeginAction(ActionPhase::Change);
 	}
-
-
-	field_enemy_pokemon->Update();
-	field_my_pokemon->Update();
-
-	button->Update();
 }
 
-void BattleManager::Render()
-{
-	field_enemy_pokemon->Render();
-	field_my_pokemon->Render();
+// â”€â”€â”€ Enemy turn start â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::ProcessEnemyTurn() {
+	turn_state.BeginAction(ActionPhase::Attack);
+}
+
+// â”€â”€â”€ Voluntary change FSM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::RunChangeAction() {
+	player_box->GetField()->Collapses();
+
+	if (player_box->GetField()->pos.x <= 0) {
+		player_status->SetIsStatus(false);
+
+		if (!behavior->GetPokeball()->GetClips()[0]->isPlay())
+			behavior->GetPokeball()->GetClips()[0]->Play();
+		behavior->GetPokeball()->Update(0);
+
+		if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) {
+			player_status->SetIsStatus(true);
+			if (player_box->SwitchToNext()) {
+				player_status->SetHPBar(player_box->GetField()->GetHP());
+				player_status->SetCurrentHP(player_box->GetField()->GetHP());
+				if (player_box->GetField()->pos.x != WIN_CENTER_X / 2)
+					player_box->GetField()->pos.x = WIN_CENTER_X / 2;
+			}
+			turn_state.EndAction();
+			turn_state.SwitchTurn();
+			g_state.mouse_click_pos = Vector2(0, 0);
+		}
+	}
+}
+
+// â”€â”€â”€ Current action dispatcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::RunCurrentAction() {
+	switch (turn_state.phase) {
+	case ActionPhase::Attack:
+		if (turn_state.IsPlayerTurn()) {
+			bool done = action_proc->RunPlayerAttack(
+				GetPlayerSkillSlot(),
+				player_box->GetField(), enemy_box->GetField(),
+				enemy_status.get());
+			if (done) {
+				turn_state.EndAction();
+				if (enemy_box->GetField()->GetHP() > 0)
+					turn_state.SwitchTurn();
+				g_state.mouse_click_pos = Vector2(0, 0);
+			}
+		} else {
+			bool done = action_proc->RunEnemyAttack(
+				GetEnemySkillSlot(),
+				enemy_box->GetField(), player_box->GetField(),
+				player_status.get(), player_status.get());
+			if (done) {
+				turn_state.EndAction();
+				turn_state.SwitchTurn();
+				g_state.mouse_click_pos = Vector2(0, 0);
+			}
+		}
+		break;
+
+	case ActionPhase::Recovery:
+		if (action_proc->RunRecovery(player_box->GetField(), player_status.get())) {
+			turn_state.EndAction();
+			turn_state.SwitchTurn();
+			g_state.mouse_click_pos = Vector2(0, 0);
+		}
+		break;
+
+	case ActionPhase::Change:
+		RunChangeAction();
+		break;
+
+	default:
+		break;
+	}
+}
+
+// â”€â”€â”€ Update / Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+void BattleManager::Update() {
+	if (is_appearance) {
+		Appearance();
+	} else {
+		button->SetActive(turn_state.IsIdle());
+		SyncStatusBoxes();
+
+		if (player_box->GetField()->GetHP() <= 0)
+			HandlePlayerFainted();
+		else if (enemy_box->GetField()->GetHP() <= 0)
+			HandleEnemyFainted();
+		else if (!turn_state.IsIdle())
+			RunCurrentAction();
+		else if (turn_state.IsPlayerTurn())
+			ProcessPlayerInput();
+		else
+			ProcessEnemyTurn();
+	}
+
+	enemy_box->GetField()->Update();
+	player_box->GetField()->Update();
+	button->Update();
+	player_status->Update();
+	enemy_status->Update();
+}
+
+void BattleManager::Render() {
+	enemy_box->GetField()->Render();
+	player_box->GetField()->Render();
 
 	player_status->Render();
 	enemy_status->Render();

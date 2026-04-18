@@ -1,5 +1,5 @@
 #pragma once
-class Font : public Transform
+class Font : public UIElement
 {
 private:
 	vector<vector<TextFrame*>> player_name_box;
@@ -7,7 +7,7 @@ private:
 	vector<vector<TextFrame*>> player_level_box;
 	vector<vector<TextFrame*>> enemy_level_box;
 	vector<vector<TextFrame*>> player_max_hp_box;
-	vector<TextFrame*> player_current_hp;
+	vector<unique_ptr<TextFrame>> player_current_hp;
 	vector<TextFrame*> font_box;
 
 	wstring name;

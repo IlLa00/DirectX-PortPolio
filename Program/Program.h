@@ -2,15 +2,14 @@
 class Program
 {
 private:
-	vector<Scene*>Scene_list;
+	vector<unique_ptr<Scene>> scene_list;
 	Scene* Now_scene;
-	UINT cursor;
 
-	vector<Sound*>Sound_list;
+	vector<unique_ptr<Sound>> sound_list;
 	Sound* Now_sound;
 
-	MatrixBuffer* view;
-	MatrixBuffer* projection;
+	unique_ptr<MatrixBuffer> view;
+	unique_ptr<MatrixBuffer> projection;
 
 	ID3D11SamplerState* samplerState;
 	ID3D11BlendState* blendState;
@@ -20,6 +19,7 @@ private:
 	void CreateSamplerState();
 	void CreateBlendState();
 	void CreateRasterizerState();
+	void TransitionTo(SceneID id);
 
 public:
 	Program();

@@ -3,7 +3,7 @@
 class ConstBuffer
 {
 private:
-	ID3D11Buffer* buffer;
+	ID3D11Buffer* buffer = nullptr;
 
 	void* data;
 

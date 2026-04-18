@@ -5,7 +5,7 @@ BattleAnimation::BattleAnimation(bool mode) : mode(mode)
 	if (mode)
 	{
 		appearance = new Appearance();
-		player = new BattlePlayer(Vector2(250, WIN_CENTER_Y + 80), gender);
+		player = new BattlePlayer(Vector2(250, WIN_CENTER_Y + 80), g_state.gender);
 		pokeball = new Pokeball();
 		skill = new Skill();
 		meditation = new Meditation();
@@ -13,7 +13,7 @@ BattleAnimation::BattleAnimation(bool mode) : mode(mode)
 	else
 	{
 		champion = new Champion();
-		player = new BattlePlayer(Vector2(250, WIN_CENTER_Y + 80), gender);
+		player = new BattlePlayer(Vector2(250, WIN_CENTER_Y + 80), g_state.gender);
 		pokeball = new Pokeball();
 		appearance = new Appearance();
 		skill = new Skill();

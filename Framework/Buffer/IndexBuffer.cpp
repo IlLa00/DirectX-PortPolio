@@ -17,7 +17,7 @@ IndexBuffer::IndexBuffer(void* data, UINT count)
 
 IndexBuffer::~IndexBuffer()
 {
-	buffer->Release();
+	if (buffer) buffer->Release();
 }
 
 void IndexBuffer::Set()

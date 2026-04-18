@@ -68,9 +68,9 @@ SelectButton::~SelectButton()
 
 void SelectButton::Update()
 {
-	button_list[0]->pos = Vector2(213.3, 625); // °ø°İ ¹öÆ°
-	button_list[1]->pos = Vector2(639.9, 625); // È¸º¹ ¹öÆ°
-	button_list[2]->pos = Vector2(1066.5, 625); // ±³Ã¼ ¹öÆ°
+	button_list[0]->pos = Vector2(213.3, 625); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°
+	button_list[1]->pos = Vector2(639.9, 625); // È¸ï¿½ï¿½ ï¿½ï¿½Æ°
+	button_list[2]->pos = Vector2(1066.5, 625); // ï¿½ï¿½Ã¼ ï¿½ï¿½Æ°
 
 	for (auto b : button_list)
 		b->WorldUpdate();
@@ -104,7 +104,7 @@ void SelectButton::Render()
 	VS->Set();
 	PS->Set();
 
-	WB->SetVS(0);
+	wb->SetVS(0);
 	CB->SetPS(0);
 
 	image->Render();

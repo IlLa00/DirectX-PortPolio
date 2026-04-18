@@ -2,12 +2,12 @@
 
 Player::Player(Vector2 pos)
 {
-	CreateClip(gender);
+	CreateClip(g_state.gender);
 
-	action = PLAYER_ACTIVE::DOWN_IDLE; // Ã³À½Àº Á¤¸é ºÎµ¿ÀÚ¼¼
+	action = PLAYER_ACTIVE::DOWN_IDLE; // Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ú¼ï¿½
 	
-	 // ¾Ö´Ï¸ÞÀÌ¼Ç ¸¸µé±â <- ÄÚµå°¡ ±æ¾î ÇÔ¼ö·Î »­
-	// Áö±Ý±îÁö °È±â »ðÀÔ + ³ªÁß¿¡ ÀÚÀü°Å¶û ´Þ¸®±â ³ÖÀ» ¿¹Á¤
+	 // ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ <- ï¿½Úµå°¡ ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½
+	// ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ ï¿½È±ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å¶ï¿½ ï¿½Þ¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	collider = new RectCollider(Vector2(40,50));
 	collider->pos = pos;
@@ -115,7 +115,7 @@ void Player::OnCollision()
 {
 	is_collision = true;
 
-	if (PLAYER_ACTIVE::DOWN_WALK) // ¹ØÀ¸·Î °¡°íÀÖ¾ú´Ù¸é
+	if (PLAYER_ACTIVE::DOWN_WALK) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ï¿½Ù¸ï¿½
 		SetClip(PLAYER_ACTIVE::DOWN_IDLE);
 	else if (PLAYER_ACTIVE::RIGHT_WALK)
 		SetClip(PLAYER_ACTIVE::RIGHT_IDLE);
@@ -157,7 +157,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 0¹ø ¾Æ·¡ ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 0ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½Îµï¿½ï¿½Ú¼ï¿½
 
 		this_frame_size = { 17.0f, 25.0f };
 		init_pos = { 60, 36 };
@@ -170,7 +170,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 1¹ø ¾Æ·¡·Î °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 1ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 
 		this_frame_size = { 17.0f, 23.0f };
@@ -179,7 +179,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 2¹ø ¿À¸¥ÂÊ ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ú¼ï¿½
 
 		init_pos = { 166, 36 };
 
@@ -192,7 +192,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 3¹ø ¿À¸¥ÂÊ °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 3ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 
 		this_frame_size = { 17.0f, 23.0f };
@@ -201,7 +201,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 4¹ø À§ÂÊ ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 4ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ú¼ï¿½
 
 		this_frame_size = { 17.0f, 25.0f };
 		init_pos = { 270, 36 };
@@ -214,7 +214,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 5¹ø À§ÂÊ °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 5ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 
 		this_frame_size = { 17.0f, 23.0f };
@@ -223,7 +223,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 6¹ø ¿ÞÂÊ ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 6ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ú¼ï¿½
 
 		this_frame_size = { 17.0f, 24.0f };
 		init_pos = { 375, 36 };
@@ -237,7 +237,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 7¹ø ¿ÞÂÊ °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 7ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 	}
 	else if (gender == false )
@@ -252,7 +252,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 0¹ø ¾Æ·¡ ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 0ï¿½ï¿½ ï¿½Æ·ï¿½ ï¿½Îµï¿½ï¿½Ú¼ï¿½
 
 		this_frame_size = { 18,26 };
 		init_pos = { 59,35 };
@@ -266,7 +266,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 1¹ø ¾Æ·¡·Î °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 1ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 
 		this_frame_size = { 17,24 };
@@ -275,7 +275,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 2¹ø ¿À¸¥ ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ú¼ï¿½
 
 		this_frame_size = { 16,25 };
 		init_pos = { 165,35 };
@@ -289,7 +289,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 3¹ø ¿À¸¥ °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 3ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 
 		this_frame_size = { 17,23 };
@@ -298,7 +298,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 		
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 4¹ø À§ ºÎµ¿
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 4ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½
 
 		this_frame_size = { 18,25 };
 		init_pos = { 269,36 };
@@ -312,7 +312,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 5¹ø À§ °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 5ï¿½ï¿½ ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 
 		this_frame_size = { 17,24 };
@@ -321,7 +321,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 6¹ø ¿Þ ºÎµ¿
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 6ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½
 
 		this_frame_size = { 18,24 };
 		init_pos = { 377,36 };
@@ -335,7 +335,7 @@ void Player::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 7¹ø ¿Þ °È±â
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::LOOP)); // 7ï¿½ï¿½ ï¿½ï¿½ ï¿½È±ï¿½
 		frames.clear();
 	}
 

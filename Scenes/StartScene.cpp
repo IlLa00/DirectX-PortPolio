@@ -1,13 +1,13 @@
 #include "framework.h"
 
-StartScene::StartScene()
+StartScene::StartScene(GameState& state)
+	: Scene(state)
 {
-	SBG = new StartBackGround();
+	SBG = make_unique<StartBackGround>();
 }
 
 StartScene::~StartScene()
 {
-	delete SBG;
 }
 
 void StartScene::Update()

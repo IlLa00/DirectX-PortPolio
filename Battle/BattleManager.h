@@ -3,67 +3,51 @@
 class BattleManager
 {
 private:
-	vector<Pokemon*> my_pokemon_box;
-	vector<Pokemon*> enemy_pokemon_box;
-	Pokemon* field_my_pokemon;
-	Pokemon* field_enemy_pokemon;
+	unique_ptr<PokemonBox>      player_box;
+	unique_ptr<PokemonBox>      enemy_box;
+	TurnManager                 turn_state;
+	unique_ptr<ActionProcessor> action_proc;
 
-	StatusBox* player_status;
-	StatusBox* enemy_status;
+	unique_ptr<StatusBox>       player_status;
+	unique_ptr<StatusBox>       enemy_status;
+	unique_ptr<SelectButton>    button;
+	unique_ptr<BattleAnimation> behavior;
 
-	SelectButton* button;
-
-	BattleAnimation* behavior;
-
-	UINT turn;
+	bool mode;
+	bool is_appearance;
+	UINT m_appear_step;
 	UINT change_turn;
 
-	bool mode; // vs야생포켓몬(True) vs챔피언(False)
-	bool is_appearance;
-	bool is_attack;
-	bool is_recovery;
-	bool is_change;
+	void Appearance();
+	void SyncStatusBoxes();
+	void HandlePlayerFainted();
+	void HandleEnemyFainted();
+	void ProcessPlayerInput();
+	void ProcessEnemyTurn();
+	void RunCurrentAction();
+	void RunChangeAction();
 
-	enum AttackState {
-		ATTACK_START,
-		ATTACK_ANIMATION,
-		ATTACK_DAMAGE,
-		ATTACK_END
-	}attackState;
-
-	enum MeditationState {
-		MEDITATION_START,
-		MEDITATION_ANIMATION,
-		MEDITATION_RECOVERY
-	}meditationState;
-
-	enum ChangeState {
-		CHANGE_START,
-		CHANGE_ANIMATION,
-		CHANGE_END
-	}changeState;
-
+	UINT GetPlayerSkillSlot() const;
+	UINT GetEnemySkillSlot()  const;
 
 public:
 	BattleManager(bool mode);
-	~BattleManager(); 
+	~BattleManager();
 
-	bool GetAttackState() { return is_attack; }
-	bool GetRecoveryState() { return is_recovery; }
-	bool GetChangeState() { return is_change; }
+	bool GetAttackState()   const { return turn_state.phase == ActionPhase::Attack; }
+	bool GetRecoveryState() const { return turn_state.phase == ActionPhase::Recovery; }
+	bool GetChangeState()   const { return turn_state.phase == ActionPhase::Change; }
 
-	float GetMyPokemonHP() { return field_my_pokemon->GetHP(); }
-	float GetEnemyPokemonHP() { return field_enemy_pokemon->GetHP(); }
+	float GetMyPokemonHP()    const { return player_box->GetField()->GetHP(); }
+	float GetEnemyPokemonHP() const { return enemy_box->GetField()->GetHP(); }
 
-	bool GetEnemyFirstPokemonSurvive() { return enemy_pokemon_box[0]->GetIsSurvive(); }
-	bool GetEnemySecondPokemonSurvive() { return enemy_pokemon_box[1]->GetIsSurvive(); }
-	bool GetEnemyThirdPokemonSurvive() { return enemy_pokemon_box[2]->GetIsSurvive(); }
+	bool GetMyFirstPokemonSurvive()     const { return player_box->GetPokemon(0)->GetIsSurvive(); }
+	bool GetMySecondPokemonSurvive()    const { return player_box->GetPokemon(1)->GetIsSurvive(); }
+	bool GetMyThirdPokemonSurvive()     const { return player_box->GetPokemon(2)->GetIsSurvive(); }
+	bool GetEnemyFirstPokemonSurvive()  const { return enemy_box->GetPokemon(0)->GetIsSurvive(); }
+	bool GetEnemySecondPokemonSurvive() const { return enemy_box->GetPokemon(1)->GetIsSurvive(); }
+	bool GetEnemyThirdPokemonSurvive()  const { return enemy_box->GetPokemon(2)->GetIsSurvive(); }
 
-	bool GetMyFirstPokemonSurvive() { return my_pokemon_box[0]->GetIsSurvive(); }
-	bool GetMySecondPokemonSurvive() { return my_pokemon_box[1]->GetIsSurvive(); }
-	bool GetMyThirdPokemonSurvive() { return my_pokemon_box[2]->GetIsSurvive(); }
-
-	void Appearance();
 	void Update();
 	void Render();
 };

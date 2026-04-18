@@ -2,23 +2,23 @@
 class TownScene : public Scene
 {
 private:
-	BackGround* BG[2];
+	unique_ptr<BackGround> BG[2];
 
-	vector<Obstackle*> obstackle_list;
-	vector<vector<Obstackle*>> stage_obstackle;
+	vector<unique_ptr<Obstackle>> obstackle_list;
+	vector<vector<unique_ptr<Obstackle>>> stage_obstackle;
 
-	Player* player;
+	unique_ptr<Player> player;
 
-	RectCollider* next_stage[2];
-	RectCollider* battle_stage[2];
+	unique_ptr<RectCollider> next_stage[2];
+	unique_ptr<RectCollider> battle_stage[2];
 
-	InGameEnemy* pokemon;
-	InGameEnemy* champion;
+	unique_ptr<InGameEnemy> pokemon;
+	unique_ptr<InGameEnemy> champion;
 
 	UINT now_stage;
 
 public:
-	TownScene();
+	explicit TownScene(GameState& state);
 	~TownScene();
 
 	virtual void Update() override;
@@ -26,4 +26,10 @@ public:
 	virtual void PostRender() override;
 
 	void ChangeStage(UINT stage);
+
+	SceneID GetNextScene() const override {
+		if (m_state.is_vsPokemon)  return SceneID::VsPokemon;
+		if (m_state.is_vsChampion) return SceneID::VsChampion;
+		return SceneID::None;
+	}
 };

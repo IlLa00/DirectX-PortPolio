@@ -1,5 +1,5 @@
 #pragma once
-class StatusBox : public Transform
+class StatusBox : public UIElement
 {
 private:
 	Frame* Box;
@@ -15,7 +15,10 @@ private:
 
 	vector<HPBar*> HPbar_list;
 
+	const GameState& m_state;
+
 	bool position;
+	bool battle_mode; // true = vsPokemon, false = vsChampion
 	UINT slot;
 	float hp;
 
@@ -28,7 +31,7 @@ private:
 	ColourBuffer* CB;
 
 public:
-	StatusBox(bool position);
+	StatusBox(bool position, const GameState& state, bool battle_mode = true);
 	~StatusBox();
 
 	void SetStatus(UINT slot) { this->slot = slot; }

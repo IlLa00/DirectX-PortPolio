@@ -16,7 +16,7 @@ ConstBuffer::ConstBuffer(void* data, UINT data_size)
 
 ConstBuffer::~ConstBuffer()
 {
-	buffer->Release();
+	if (buffer) buffer->Release();
 }
 
 void ConstBuffer::SetVS(UINT slot)

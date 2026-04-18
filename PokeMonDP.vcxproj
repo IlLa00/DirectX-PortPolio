@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
@@ -79,8 +79,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\KHJ\DirectX-PortPolio\FMOD\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\KHJ\DirectX-PortPolio\FMOD\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)FMOD\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)FMOD\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -130,14 +130,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>framework.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>fmod_vc.lib;Ole32.lib; OleAut32.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\KHJ\DirectX-PortPolio\DirectXTex\Shaders\Compiled;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Shaders\Compiled;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <EntryPointName>VS</EntryPointName>
@@ -177,6 +177,15 @@
     <ClInclude Include="Battle\Skill.h" />
     <ClInclude Include="Battle\StatusBox.h" />
     <ClInclude Include="Battle\TextFrame.h" />
+    <ClInclude Include="Battle\ActionProcessor.h" />
+    <ClInclude Include="Battle\PokemonBox.h" />
+    <ClInclude Include="Battle\TurnManager.h" />
+    <ClInclude Include="Battle\UIElement.h" />
+    <ClInclude Include="Core\GameState.h" />
+    <ClInclude Include="Core\Interfaces.h" />
+    <ClInclude Include="Core\SceneID.h" />
+    <ClInclude Include="Data\PokemonData.h" />
+    <ClInclude Include="Data\SkillAnimConfig.h" />
     <ClInclude Include="FMOD\inc\fmod.h" />
     <ClInclude Include="FMOD\inc\fmod.hpp" />
     <ClInclude Include="FMOD\inc\fmod_codec.h" />
@@ -246,6 +255,9 @@
     <ClCompile Include="Battle\Skill.cpp" />
     <ClCompile Include="Battle\StatusBox.cpp" />
     <ClCompile Include="Battle\TextFrame.cpp" />
+    <ClCompile Include="Battle\ActionProcessor.cpp" />
+    <ClCompile Include="Battle\PokemonBox.cpp" />
+    <ClCompile Include="Battle\UIElement.cpp" />
     <ClCompile Include="Framework\Buffer\ConstBuffer.cpp" />
     <ClCompile Include="Framework\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="Framework\Buffer\VertexBuffer.cpp" />

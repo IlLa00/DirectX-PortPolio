@@ -1,8 +1,9 @@
 #include "framework.h"
 
-StatusBox::StatusBox(bool position) : position(position)
+StatusBox::StatusBox(bool position, const GameState& state, bool battle_mode)
+	: position(position), m_state(state), battle_mode(battle_mode)
 {
-	if (position) // ÇÃ·¹ÀÌ¾î Æ÷ÄÏ¸ó
+	if (position) // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½
 	{
 		Box = new Frame(L"Texture/StatusBox.png", 7, 92, 128, 47);
 		player_name = new Font(L"PLAYER_NAME");
@@ -13,7 +14,7 @@ StatusBox::StatusBox(bool position) : position(position)
 		for (int i = 0; i < 10; i++)
 			HPbar_list.push_back(new HPBar(Vector2(WIN_CENTER_X + 400 + 21.5 * i, 458.5)));
 	}
-	else // »ó´ë Æ÷ÄÏ¸ó
+	else // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½
 	{
 		Box = new Frame(L"Texture/StatusBox.png", 156, 92, 122, 35);
 		enemy_name = new Font(L"ENEMY_NAME");
@@ -59,10 +60,8 @@ StatusBox::~StatusBox()
 
 void StatusBox::Update()
 {
-	if (position) // ÇÃ·¹ÀÌ¾î Æ÷ÄÏ¸ó »óÅÂÃ¢
+	if (position) // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢
 	{
-		status_active = true;
-
 		this->scale.x = Box->GetFrameSize().x * 4.25f;
 		this->scale.y = Box->GetFrameSize().y * 2.5f;
 
@@ -74,22 +73,20 @@ void StatusBox::Update()
 		player_max_hp->Update(slot);
 		player_current_hp->Update(slot);
 	}
-	else // »ó´ë Æ÷ÄÏ¸ó »óÅÂÃ¢
+	else // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¢
 	{
-		status_active = true;
-
 		this->scale.x = Box->GetFrameSize().x * 4.5f;
 		this->scale.y = Box->GetFrameSize().y * 3.25f;
 
 		for (auto h : HPbar_list)
 			h->Update();
 
-		if (is_vsPokemon)
+		if (battle_mode)
 		{
 			enemy_name->Update(slot);
 			enemy_level->Update(slot);
 		}
-		else if (is_vsChampion)
+		else
 		{
 			enemy_name->Update(slot + 1);
 			enemy_level->Update(slot + 1);
@@ -104,7 +101,7 @@ void StatusBox::Render()
 	VS->Set();
 	PS->Set();
 
-	WB->SetVS(0);
+	wb->SetVS(0);
 	CB->SetPS(0);
 
 	if (position)
@@ -115,7 +112,7 @@ void StatusBox::Render()
 
 			UINT current_hp = (UINT)hp / 10;
 
-			if (current_hp != 0) // 10´ÜÀ§·Î Ã¼·Â¹Ù Ãâ·Â
+			if (current_hp != 0) // 10ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½Â¹ï¿½ ï¿½ï¿½ï¿½
 			{
 				for (int i = 0; i < current_hp; i++)
 					HPbar_list[i]->Render();
@@ -135,18 +132,18 @@ void StatusBox::Render()
 			
 			UINT current_hp = (UINT)hp / 10;
 
-			if (current_hp != 0) // 10´ÜÀ§·Î Ã¼·Â¹Ù Ãâ·Â
+			if (current_hp != 0) // 10ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½Â¹ï¿½ ï¿½ï¿½ï¿½
 			{
 				for (int i = 0; i < current_hp; i++)
 					HPbar_list[i]->Render();
 			}
 				
-			if (is_vsPokemon)
+			if (battle_mode)
 			{
 				enemy_name->Render(slot);
 				enemy_level->Render(slot);
 			}
-			else if (is_vsChampion)
+			else
 			{
 				enemy_name->Render(slot + 1);
 				enemy_level->Render(slot + 1);

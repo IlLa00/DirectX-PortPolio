@@ -1,5 +1,5 @@
 #pragma once
-class HPBar : public Transform
+class HPBar : public UIElement
 {
 private:
 	Frame* bar;

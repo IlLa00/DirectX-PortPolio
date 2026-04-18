@@ -27,6 +27,7 @@ void BattlePlayer::SetGender(bool gender)
 		}
 		else
 		{
+			for (Clip* c : clips) delete c;
 			clips.clear();
 			CreateClip(true);
 			is_gender = false;
@@ -81,7 +82,8 @@ void BattlePlayer::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::END, 1.0f / 3.0f)); // ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::END, 1.0f / 3.0f)); // ï¿½Îµï¿½ï¿½Ú¼ï¿½
+		frames.clear();
 
 		this_frame_size = { 59.0f, 56.0f };
 		init_pos = { 364, 401 };
@@ -108,11 +110,9 @@ void BattlePlayer::CreateClip(bool gender)
 			this_frame_size.x, this_frame_size.y));
 
 		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::END, 1.0f / 3.0f));
-
-		frames.clear();
 	}
 
-	else // ¿©ÀÚ
+	else // ï¿½ï¿½ï¿½ï¿½
 	{
 		wstring file = L"Texture/Player_girl.png";
 		Texture* t = Texture::Add(file);
@@ -123,7 +123,8 @@ void BattlePlayer::CreateClip(bool gender)
 		frames.push_back(new Frame(file, init_pos.x, init_pos.y,
 			this_frame_size.x, this_frame_size.y));
 
-		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::END, 1.0f / 3.0f)); // ºÎµ¿ÀÚ¼¼
+		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::END, 1.0f / 3.0f)); // ï¿½Îµï¿½ï¿½Ú¼ï¿½
+		frames.clear();
 
 		this_frame_size = { 54.0f, 60.0f };
 		init_pos = { 373, 397 };
@@ -150,8 +151,6 @@ void BattlePlayer::CreateClip(bool gender)
 			this_frame_size.x, this_frame_size.y));
 
 		clips.push_back(new Clip(frames, Clip::CLIP_TYPE::END, 1.0f / 3.0f));
-
-		frames.clear();
 	}
 
 	for (auto s : is_active)

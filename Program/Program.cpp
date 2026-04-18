@@ -5,26 +5,25 @@ Program::Program()
 {
 	Create();
 
-	Scene_list.push_back(new StartScene());
-	Scene_list.push_back(new CharactorSelectScene());
-	Scene_list.push_back(new TownScene());
-	Scene_list.push_back(new vsPokemonScene());
-	Scene_list.push_back(new vsChampionScene());
+	scene_list.push_back(make_unique<StartScene>(g_state));
+	scene_list.push_back(make_unique<CharactorSelectScene>(g_state));
+	scene_list.push_back(make_unique<TownScene>(g_state));
+	scene_list.push_back(make_unique<vsPokemonScene>(g_state));
+	scene_list.push_back(make_unique<vsChampionScene>(g_state));
 
-	Now_scene = Scene_list[0];
+	Now_scene = scene_list[0].get();
 
 	Sound::Init();
 
-	Sound_list.push_back(new Sound("BGM/Pokemon Diamond - Intro - Nintendo DS.mp3", true));
-	Sound_list.push_back(new Sound("BGM/Data_sound_bgm_Introduction.wav", true));
-	Sound_list.push_back(new Sound("BGM/Data_sound_bgm_Lake.wav", true));
-	Sound_list.push_back(new Sound("BGM/206496544D7DC35D18.mp3", true));
-	Sound_list.push_back(new Sound("BGM/17159E4D4D7DC6202B.mp3", true));
-	
-	Now_sound = Sound_list[0];
+	sound_list.push_back(make_unique<Sound>("BGM/Pokemon Diamond - Intro - Nintendo DS.mp3", true));
+	sound_list.push_back(make_unique<Sound>("BGM/Data_sound_bgm_Introduction.wav", true));
+	sound_list.push_back(make_unique<Sound>("BGM/Data_sound_bgm_Lake.wav", true));
+	sound_list.push_back(make_unique<Sound>("BGM/206496544D7DC35D18.mp3", true));
+	sound_list.push_back(make_unique<Sound>("BGM/17159E4D4D7DC6202B.mp3", true));
+
+	Now_sound = sound_list[0].get();
 	Now_sound->Play();
 
-	cursor = 0;
 }
 
 
@@ -33,80 +32,23 @@ void Program::Update()
 	Control::Get()->Update();
 	Timer::Get()->Update();
 
-	if (Now_scene == Scene_list[0] && KEY_CON->Down(VK_SPACE)) // 게임 시작화면 -> 캐릭터 선택화면
-	{
-		Now_scene = Scene_list[1];
-
-		Now_sound->Stop();
-		Now_sound = Sound_list[1];
-		Now_sound->Play();
-	}
-
-	if (Now_scene == Scene_list[1] && mouse_click_pos.x > 260.0f && mouse_click_pos.x < 410 && mouse_click_pos.y < 535 && mouse_click_pos.y > 185)
-	// 캐릭터 선택화면 -> 마을 (남자선택)
-	{
-		gender = true;
-		Now_scene = Scene_list[2];
-
-		Now_sound->Stop();
-		Now_sound = Sound_list[2];
-		Now_sound->Play();
-	}
-	if (Now_scene == Scene_list[1] && mouse_click_pos.x > 865.0f && mouse_click_pos.x < 1015 && mouse_click_pos.y < 535 && mouse_click_pos.y > 185)
-	// 캐릭터 선택화면 -> 마을 (여자선택)
-	{
-		gender = false;
-		Now_scene = Scene_list[2];
-
-		Now_sound->Stop();
-		Now_sound = Sound_list[2];
-		Now_sound->Play();
-	}
-
-	if (Now_scene == Scene_list[2] && is_vsPokemon) // 마을 -> 포켓몬과 전투
-	{
-		Now_scene = Scene_list[3];
-
-		Now_sound->Stop();
-		Now_sound = Sound_list[3];
-		Now_sound->Play();
-	}
-	if (Now_scene == Scene_list[3] && clear_vsPokemon) // 포켓몬과 전투를 끝내면 마을로 복귀
-	{
-		Now_scene = Scene_list[2];
-
-		Now_sound->Stop();
-		Now_sound = Sound_list[2];
-		Now_sound->Play();
-	}
-
-	if (Now_scene == Scene_list[2] && is_vsChampion) // 마을 -> 챔피언과 전투
-	{
-		Now_scene = Scene_list[4];
-
-		Now_sound->Stop();
-		Now_sound = Sound_list[4];
-		Now_sound->Play();
-	}
-	if (Now_scene == Scene_list[4] && clear_vsChampion) // 챔피언과 전투를 끝내면 마을로 복귀
-	{
-		Now_scene = Scene_list[2];
-
-		Now_sound->Stop();
-		Now_sound = Sound_list[2];
-		Now_sound->Play();
-	}
-
-	// 밑에는 빠른 작업을 위한 코드
-	
-	if (KEY_CON->Down('R')) 
-	{
-		cursor++;
-		Now_scene = Scene_list[cursor];
-	}
+	SceneID next = Now_scene->GetNextScene();
+	if (next != SceneID::None)
+		TransitionTo(next);
 
 	Now_scene->Update();
 	Now_sound->Update();
+}
+
+void Program::TransitionTo(SceneID id)
+{
+	Now_scene->OnExit();
+	Now_scene = scene_list[(int)id].get();
+	Now_sound->Stop();
+	static const int BGM_MAP[] = { 0, 1, 2, 3, 4 };
+	Now_sound = sound_list[BGM_MAP[(int)id]].get();
+	Now_sound->Play();
+	Now_scene->OnEnter();
 }
 
 void Program::CreateSamplerState()
@@ -158,20 +100,6 @@ void Program::CreateRasterizerState()
 
 Program::~Program()
 {
-	delete view;
-	delete projection;
-
-	for (auto s : Scene_list)
-		delete s;
-	for (auto s : Sound_list)
-		delete s;
-
-	Scene_list.clear();
-	Sound_list.clear();
-
-	delete Now_scene;
-	delete Now_sound;
-	
 	Sound::Release();
 }
 
@@ -186,9 +114,9 @@ void Program::Render()
 	string fps = "FPS : " + to_string(Timer::Get()->GetFPS());
 	ImGui::Text(fps.c_str());
 	ImGui::Text("Total Run Time : %f", Timer::Get()->GetRunTime());
-	ImGui::Text("Gender : %s (True : Boy, False : Girl)", gender ? "true" : "false");
-	//ImGui::Text("is Pokemon : %s", is_vsPokemon ? "true" : "false");
-	//ImGui::Text("Clear Pokemon : %s", clear_vsPokemon ? "true" : "false");
+	ImGui::Text("Gender : %s (True : Boy, False : Girl)", g_state.gender ? "true" : "false");
+	//ImGui::Text("is Pokemon : %s", g_state.is_vsPokemon ? "true" : "false");
+	//ImGui::Text("Clear Pokemon : %s", g_state.clear_vsPokemon ? "true" : "false");
 
 	Now_scene->Render();
 	Now_scene->PostRender();
@@ -218,8 +146,8 @@ void Program::Create()
 
 void Program::CreateProjection()
 {
-	view = new MatrixBuffer();
-	projection = new MatrixBuffer();
+	view = make_unique<MatrixBuffer>();
+	projection = make_unique<MatrixBuffer>();
 
 	Matrix orthographic = XMMatrixOrthographicOffCenterLH
 	(

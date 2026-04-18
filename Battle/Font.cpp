@@ -5,7 +5,7 @@ Font::Font(wstring name, wstring file) : name(name), file(file)
 	//wstring file = L"Texture/StatusBox.png";
 	// vector<TextFrame*> font_box;
 
-	if (name == L"PLAYER_NAME") // ÇÃ·¹ÀÌ¾î Æ÷ÄÏ¸ó ÀÌ¸§
+	if (name == L"PLAYER_NAME") // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½Ì¸ï¿½
 	{
 		font_box.push_back(new TextFrame(file, 375, 50, 6, 10)); // P
 		font_box.push_back(new TextFrame(file, 630, 32, 2, 9)); // i
@@ -89,7 +89,7 @@ Font::Font(wstring name, wstring file) : name(name), file(file)
 		font_box.clear();
 
 	}
-	else if (name == L"PLAYER_LEVEL") // ÇÃ·¹ÀÌ¾î Æ÷ÄÏ¸ó ·¹º§
+	else if (name == L"PLAYER_LEVEL") // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 	{
 		font_box.push_back(new TextFrame(file, 375, 88, 6, 10)); // 5
 
@@ -109,7 +109,7 @@ Font::Font(wstring name, wstring file) : name(name), file(file)
 		player_level_box.push_back(font_box);
 		font_box.clear();
 	}
-	else if (name == L"ENEMY_LEVEL") // Àû±º Æ÷ÄÏ¸ó ·¹º§
+	else if (name == L"ENEMY_LEVEL") // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 	{
 		font_box.push_back(new TextFrame(file, 327, 88, 6, 10)); // 2
 
@@ -134,7 +134,7 @@ Font::Font(wstring name, wstring file) : name(name), file(file)
 		enemy_level_box.push_back(font_box);
 		font_box.clear();
 	}
-	else if (name == L"PLAYER_MAX_HP") // °ÇµéÇÊ¿ä¾øÀ½
+	else if (name == L"PLAYER_MAX_HP") // ï¿½Çµï¿½ï¿½Ê¿ï¿½ï¿½ï¿½ï¿½
 	{
 		font_box.push_back(new TextFrame(file, 312, 88, 4, 10)); // 1
 		font_box.push_back(new TextFrame(file, 295, 88, 6, 10)); // 0
@@ -259,8 +259,6 @@ Font::~Font()
 		}
 	}
 
-	for (auto c : player_current_hp)
-		delete c;
 	player_current_hp.clear();
 
 	delete CB;
@@ -273,39 +271,39 @@ void Font::SetHP(float hp)
 
 	while (hp >= 1.0f) 
 	{
-		float r = fmod(hp, 10.0);  // ³ª¸ÓÁö ±¸ÇÏ±â
+		float r = fmod(hp, 10.0);  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 		
 		switch ((int)r)
 		{
 		case 0:
-			player_current_hp.push_back(new TextFrame(file, 295, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 295, 88, 6, 10));
 			break;
 		case 1:
-			player_current_hp.push_back(new TextFrame(file, 312, 88, 4, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 312, 88, 4, 10));
 			break;
 		case 2:
-			player_current_hp.push_back(new TextFrame(file, 327, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 327, 88, 6, 10));
 			break;
 		case 3:
-			player_current_hp.push_back(new TextFrame(file, 343, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 343, 88, 6, 10));
 			break;
 		case 4:
-			player_current_hp.push_back(new TextFrame(file, 359, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 359, 88, 6, 10));
 			break;
 		case 5:
-			player_current_hp.push_back(new TextFrame(file, 375, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 375, 88, 6, 10));
 			break;
 		case 6:
-			player_current_hp.push_back(new TextFrame(file, 391, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 391, 88, 6, 10));
 			break;
 		case 7:
-			player_current_hp.push_back(new TextFrame(file, 407, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 407, 88, 6, 10));
 			break;
 		case 8:
-			player_current_hp.push_back(new TextFrame(file, 423, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 423, 88, 6, 10));
 			break;
 		case 9:
-			player_current_hp.push_back(new TextFrame(file, 439, 88, 6, 10));
+			player_current_hp.push_back(make_unique<TextFrame>(file, 439, 88, 6, 10));
 			break;
 		}
 
@@ -362,7 +360,7 @@ void Font::Update(UINT slot)
 			player_max_hp_box[0][i]->WorldUpdate();
 		}
 	}
-	else if (name == L"PLAYER_CURRENT_HP") // ÀÌÂÊÀÌ ÇöÀçÃ¼·Â ±¸ÇÏ´Â ÄÚµå
+	else if (name == L"PLAYER_CURRENT_HP") // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Úµï¿½
 	{
 		for (int i = 0; i < player_current_hp.size(); i++)
 		{
@@ -378,7 +376,7 @@ void Font::Render(UINT slot)
 	VS->Set();
 	PS->Set();
 
-	WB->SetVS(0);
+	wb->SetVS(0);
 	CB->SetPS(0);
 
 	if (name == L"PLAYER_NAME")
@@ -418,7 +416,7 @@ void Font::Render(UINT slot)
 	}
 	else if (name == L"PLAYER_CURRENT_HP")
 	{
-		for (auto f : player_current_hp)
+		for (auto& f : player_current_hp)
 		{
 			f->Render();
 		}

@@ -1,22 +1,19 @@
 #include "framework.h"
 
-vsChampionScene::vsChampionScene()
+vsChampionScene::vsChampionScene(GameState& state)
+	: Scene(state)
 {
-	BG = new BackGround(L"Texture/ChampionMap.png"); // ¹è°æÈ­¸é ¼³Á¤
-	field[0] = new BattleField(Vector2(WIN_CENTER_X / 2, WIN_CENTER_Y + 145),
+	BG = make_unique<BackGround>(L"Texture/ChampionMap.png"); // ï¿½ï¿½ï¿½È?¿½ï¿?ï¿½ï¿½ï¿½ï¿½
+	field[0] = make_unique<BattleField>(Vector2(WIN_CENTER_X / 2, WIN_CENTER_Y + 145),
 		L"Texture/BattleBackGround.png", 1010, 1516, 161, 17);
-	field[1] = new BattleField(Vector2(WIN_CENTER_X + 350, WIN_CENTER_Y),
+	field[1] = make_unique<BattleField>(Vector2(WIN_CENTER_X + 350, WIN_CENTER_Y),
 		L"Texture/BattleBackGround.png", 1140, 1464, 124, 29);
 
-	manager = new BattleManager(false);
+	manager = make_unique<BattleManager>(false);
 }
 
 vsChampionScene::~vsChampionScene()
 {
-	delete BG;
-	delete field[0];
-	delete field[1];
-	delete manager;
 }
 
 void vsChampionScene::Update()
@@ -40,7 +37,7 @@ void vsChampionScene::PostRender()
 	ImGui::Text("Attack : %s", manager->GetAttackState() ? "true" : "false");
 	ImGui::Text("Recovery : %s", manager->GetRecoveryState() ? "true" : "false");
 	ImGui::Text("Change : %s", manager->GetChangeState() ? "true" : "false");
-	ImGui::SliderFloat2("Mouse Click pos", (float*)&mouse_click_pos, 0, 1280, NULL);
+	ImGui::SliderFloat2("Mouse Click pos", (float*)&g_state.mouse_click_pos, 0, 1280, NULL);
 	ImGui::Text("My Pokemon HP : %f", manager->GetMyPokemonHP());
 	ImGui::Text("Enemy Pokemon HP : %f", manager->GetEnemyPokemonHP());
 	ImGui::Text("My First Pokemon : %s", manager->GetMyFirstPokemonSurvive() ? "true" : "false");
@@ -49,4 +46,10 @@ void vsChampionScene::PostRender()
 	ImGui::Text("Enemy First Pokemon Survive : %s", manager->GetEnemyFirstPokemonSurvive() ? "true" : "false");
 	ImGui::Text("Enemy Second Pokemon Survive : %s", manager->GetEnemySecondPokemonSurvive() ? "true" : "false");
 	ImGui::Text("Enemy Third Pokemon Survive : %s", manager->GetEnemyThirdPokemonSurvive() ? "true" : "false");
+}
+
+void vsChampionScene::OnEnter()
+{
+	m_state.is_vsChampion = false;
+	manager = make_unique<BattleManager>(false);
 }

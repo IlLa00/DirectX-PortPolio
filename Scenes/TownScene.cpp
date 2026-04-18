@@ -1,96 +1,84 @@
 #include "framework.h"
 
-TownScene::TownScene()
+TownScene::TownScene(GameState& state)
+	: Scene(state)
 {
-	// ¸Ê 1
-	BG[0] = new BackGround(L"Texture/StartMap.png"); 
+	// ï¿½ï¿½ 1
+	BG[0] = make_unique<BackGround>(L"Texture/StartMap.png"); 
 	
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X - 205, WIN_CENTER_Y + 110), Vector2(160, 80), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X + 205, WIN_CENTER_Y + 110), Vector2(240, 50), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X + 205, WIN_CENTER_Y - 120), Vector2(160, 80), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X - 205, WIN_CENTER_Y - 130), Vector2(240, 100), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X - 285, WIN_CENTER_Y - 310), Vector2(210, 90), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X + 285, WIN_CENTER_Y - 310), Vector2(210, 90), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X + 20, WIN_CENTER_Y - 20), Vector2(40, 20), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X / 6, WIN_CENTER_Y), Vector2(250, WIN_HEIGHT), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(1180, WIN_CENTER_Y), Vector2(250, WIN_HEIGHT), Vector2(1, 1), 0.0f)); 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X, WIN_HEIGHT), Vector2(WIN_WIDTH, 150), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X - 205, WIN_CENTER_Y + 110), Vector2(160, 80), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X + 205, WIN_CENTER_Y + 110), Vector2(240, 50), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X + 205, WIN_CENTER_Y - 120), Vector2(160, 80), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X - 205, WIN_CENTER_Y - 130), Vector2(240, 100), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X - 285, WIN_CENTER_Y - 310), Vector2(210, 90), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X + 285, WIN_CENTER_Y - 310), Vector2(210, 90), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X + 20, WIN_CENTER_Y - 20), Vector2(40, 20), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X / 6, WIN_CENTER_Y), Vector2(250, WIN_HEIGHT), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(1180, WIN_CENTER_Y), Vector2(250, WIN_HEIGHT), Vector2(1, 1), 0.0f)); 
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X, WIN_HEIGHT), Vector2(WIN_WIDTH, 150), Vector2(1, 1), 0.0f));
 
-	stage_obstackle.push_back(obstackle_list);
+	stage_obstackle.push_back(std::move(obstackle_list));
 	obstackle_list.clear();
 
-	next_stage[0] = new RectCollider(Vector2(400, 40));
+	next_stage[0] = make_unique<RectCollider>(Vector2(400, 40));
 	next_stage[0]->is_active = true;
 	next_stage[0]->SetColor(0, 0, 0);
 
-	// ¸Ê 2
+	// ï¿½ï¿½ 2
 	
-	BG[1] = new BackGround(L"Texture/Town2.png");
+	BG[1] = make_unique<BackGround>(L"Texture/Town2.png");
 
-	obstackle_list.push_back(new Obstackle(Vector2(WIN_CENTER_X, WIN_CENTER_Y + 225), Vector2(WIN_WIDTH, 200), Vector2(1, 1), 0.0f));
-	obstackle_list.push_back(new Obstackle(Vector2(160, WIN_CENTER_Y), Vector2(WIN_WIDTH / 3, WIN_HEIGHT), Vector2(1, 1), 0.0f));
-	obstackle_list.push_back(new Obstackle(Vector2(1000, 200), Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2), Vector2(1, 1), 0.0f));
-	obstackle_list.push_back(new Obstackle(Vector2(220, 540), Vector2(500, 350), Vector2(1, 1), 0.0f));
-	obstackle_list.push_back(new Obstackle(Vector2(310, 600), Vector2(500, 350), Vector2(1, 1), 0.0f));
-	obstackle_list.push_back(new Obstackle(Vector2(200, 80), Vector2(500, 250), Vector2(1, 1), 0.0f));
-	obstackle_list.push_back(new Obstackle(Vector2(850, 80), Vector2(500, 250), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(WIN_CENTER_X, WIN_CENTER_Y + 225), Vector2(WIN_WIDTH, 200), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(160, WIN_CENTER_Y), Vector2(WIN_WIDTH / 3, WIN_HEIGHT), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(1000, 200), Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(220, 540), Vector2(500, 350), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(310, 600), Vector2(500, 350), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(200, 80), Vector2(500, 250), Vector2(1, 1), 0.0f));
+	obstackle_list.push_back(make_unique<Obstackle>(Vector2(850, 80), Vector2(500, 250), Vector2(1, 1), 0.0f));
 
-	stage_obstackle.push_back(obstackle_list);
+	stage_obstackle.push_back(std::move(obstackle_list));
 	obstackle_list.clear();
 
-	next_stage[1] = new RectCollider(Vector2(200, 50));
+	next_stage[1] = make_unique<RectCollider>(Vector2(200, 50));
 	next_stage[1]->is_active = true;
 	next_stage[1]->SetColor(0, 0, 0);
-	battle_stage[0] = new RectCollider(Vector2(30,100));
+	battle_stage[0] = make_unique<RectCollider>(Vector2(30,100));
 	battle_stage[0]->is_active = true;
 	battle_stage[0]->SetColor(0, 0, 0);
-	battle_stage[1] = new RectCollider(Vector2(80, 80));
+	battle_stage[1] = make_unique<RectCollider>(Vector2(80, 80));
 	battle_stage[1]->is_active = true;
 	battle_stage[1]->SetColor(0, 0, 0);
 
-	champion = new InGameEnemy(Vector2(525, 145), L"Texture/Champion.png",  453, 166, 21, 24);
+	champion = make_unique<InGameEnemy>(Vector2(525, 145), L"Texture/Champion.png",  453, 166, 21, 24);
 	champion->is_active = true;
 
-	pokemon = new InGameEnemy(Vector2(WIN_CENTER_X + 20, WIN_CENTER_Y + 30), L"Texture/OverWorldPokemon.png",  594, 77, 13, 17);
+	pokemon = make_unique<InGameEnemy>(Vector2(WIN_CENTER_X + 20, WIN_CENTER_Y + 30), L"Texture/OverWorldPokemon.png",  594, 77, 13, 17);
 	pokemon->is_active = true;
 	
-	player = new Player(Vector2(835, 540));
+	player = make_unique<Player>(Vector2(835, 540));
 
 	now_stage = 1;
 }
 
 TownScene::~TownScene()
 {
-	delete player;
-
-	for (auto b : BG)
-		delete b;
-
-	for (auto o : obstackle_list)
-		delete o;
-
-	delete next_stage[0];
-	delete next_stage[1];
-
-	delete pokemon;
-	delete champion;
 }
 
 void TownScene::Update()
 {
 	Vector2 obstackle_area;
-	player->SetGender(gender);
+	player->SetGender(g_state.gender);
 
-	if (now_stage == 1) // ÇöÀç 1½ºÅ×ÀÌÁö (¸¶À»)
+	if (now_stage == 1) // ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
 	{
 		BG[0]->Update();
 		next_stage[0]->pos = Vector2(WIN_CENTER_X, 30);
 
-		if (player->GetCollider()->isCollision(next_stage[0]))
+		if (player->GetCollider()->isCollision(next_stage[0].get()))
 			ChangeStage(now_stage);
 
 		
-		for (auto s : stage_obstackle[0])
+		for (auto& s : stage_obstackle[0])
 		{
 			if (player->GetCollider()->isCollision(s->GetCollider(), &obstackle_area))
 			{
@@ -120,7 +108,7 @@ void TownScene::Update()
 		next_stage[0]->WorldUpdate();
 	}
 
-	else // ÇöÀç 2½ºÅ×ÀÌÁö (¾ß»ý)
+	else // ï¿½ï¿½ï¿½ï¿½ 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ß»ï¿½)
 	{
 		BG[1]->Update();
 		next_stage[1]->pos = Vector2(WIN_WIDTH - 25, WIN_CENTER_Y + 75);
@@ -129,10 +117,10 @@ void TownScene::Update()
 		pokemon->Update();
 		champion->Update();
 
-		if (player->GetCollider()->isCollision(next_stage[1]))
+		if (player->GetCollider()->isCollision(next_stage[1].get()))
 			ChangeStage(now_stage);
 
-		for (auto s : stage_obstackle[1])
+		for (auto& s : stage_obstackle[1])
 		{
 			if (player->GetCollider()->isCollision(s->GetCollider(), &obstackle_area))
 			{
@@ -158,42 +146,42 @@ void TownScene::Update()
 			s->Update();
 		}
 
-		if (player->GetCollider()->isCollision(battle_stage[0])) // Âî¸£²¿¿Í ¸¶ÁÖÄ¡¸é
-			is_vsPokemon = true;
+		if (player->GetCollider()->isCollision(battle_stage[0].get())) // ï¿½î¸£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½
+			m_state.is_vsPokemon = true;
 
-		if (player->GetCollider()->isCollision(battle_stage[1])) // Ã¨ÇÇ¾ð°ú ¸¶ÁÖÄ¡¸é
-			is_vsChampion = true;
+		if (player->GetCollider()->isCollision(battle_stage[1].get())) // Ã¨ï¿½Ç¾ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½
+			m_state.is_vsChampion = true;
 
-		if (clear_vsPokemon) // Æ÷ÄÏ¸ó°úÀÇ ÀüÅõ°¡ ¿Ï·áµÇ¸é
+		if (m_state.clear_vsPokemon) // ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç¸ï¿?
 		{
-			if (!lose_vsPokemon) // ½Â¸®Çß´Ù¸é
+			if (!m_state.lose_vsPokemon) // ï¿½Â¸ï¿½ï¿½ß´Ù¸ï¿½
 			{
-				is_vsPokemon = false;
+				m_state.is_vsPokemon = false;
 				battle_stage[0]->is_active = false;
 				pokemon->is_active = false;
 			}
 			else
 			{
-				is_vsPokemon = false;
-				player->pos = Vector2(WIN_WIDTH - 150, WIN_CENTER_Y + 75); // ÀçµµÀü
-				lose_vsPokemon = false;
-				clear_vsPokemon = false;
+				m_state.is_vsPokemon = false;
+				player->pos = Vector2(WIN_WIDTH - 150, WIN_CENTER_Y + 75); // ï¿½çµµï¿½ï¿½
+				m_state.lose_vsPokemon = false;
+				m_state.clear_vsPokemon = false;
 			}
 		}
-		if (clear_vsChampion) // Ã¨ÇÇ¾ð°úÀÇ ÀüÅõ°¡ ¿Ï·áµÇ¸é
+		if (m_state.clear_vsChampion) // Ã¨ï¿½Ç¾ï¿½ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Ç¸ï¿?
 		{
-			if (!lose_vsChampion) // ½Â¸®Çß´Ù¸é
+			if (!m_state.lose_vsChampion) // ï¿½Â¸ï¿½ï¿½ß´Ù¸ï¿½
 			{
-				is_vsChampion = false;
+				m_state.is_vsChampion = false;
 				battle_stage[1]->is_active = false;
 				champion->is_active = false;
 			}
 			else
 			{
-				is_vsChampion = false;
-				player->pos = Vector2(WIN_WIDTH - 150, WIN_CENTER_Y + 75); // ÀçµµÀü
-				lose_vsChampion = false;
-				clear_vsChampion = false;
+				m_state.is_vsChampion = false;
+				player->pos = Vector2(WIN_WIDTH - 150, WIN_CENTER_Y + 75); // ï¿½çµµï¿½ï¿½
+				m_state.lose_vsChampion = false;
+				m_state.clear_vsChampion = false;
 
 			}
 		}
@@ -207,7 +195,7 @@ void TownScene::Update()
 
 void TownScene::ChangeStage(UINT stage)
 {
-	if (stage == 1) // ¸¶À»ÀÌ¸é ¾ß»ýÀ¸·Î ³Ñ¾î°¡¾ßµÊ
+	if (stage == 1) // ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¡ï¿½ßµï¿½
 	{
 		BG[0]->is_active = false;
 		next_stage[1]->is_active = false;
@@ -223,7 +211,7 @@ void TownScene::ChangeStage(UINT stage)
 
 		now_stage++;
 	}
-	else // ¾ß»ýÀÌ¸é ¸¶À»·Î µ¹¾Æ°¡±â
+	else // ï¿½ß»ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ°ï¿½ï¿½ï¿½
 	{
 		BG[1]->is_active = false;
 		next_stage[1]->is_active = false;
@@ -247,7 +235,7 @@ void TownScene::Render()
 	{
 		BG[0]->Render();
 
-		for (auto o : stage_obstackle[0])
+		for (auto& o : stage_obstackle[0])
 			o->Render();
 
 		next_stage[0]->Render();
@@ -256,7 +244,7 @@ void TownScene::Render()
 	{
 		BG[1]->Render();
 
-		for (auto o : stage_obstackle[1])
+		for (auto& o : stage_obstackle[1])
 			o->Render();
 
 		next_stage[1]->Render();

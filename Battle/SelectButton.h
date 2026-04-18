@@ -1,5 +1,5 @@
 #pragma once
-class SelectButton : public Transform
+class SelectButton : public UIElement
 {
 private:
 	vector<RectCollider*> button_list;

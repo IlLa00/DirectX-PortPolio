@@ -16,7 +16,7 @@ VertexBuffer::VertexBuffer(void* data, UINT s, UINT count)
 
 VertexBuffer::~VertexBuffer()
 {
-	buffer->Release();
+	if (buffer) buffer->Release();
 }
 
 void VertexBuffer::Set(D3D11_PRIMITIVE_TOPOLOGY type)
