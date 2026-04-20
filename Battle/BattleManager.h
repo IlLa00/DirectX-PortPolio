@@ -1,5 +1,7 @@
 #pragma once
 
+struct IBattleContext;
+
 class BattleManager
 {
 private:
