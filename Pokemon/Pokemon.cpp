@@ -43,6 +43,11 @@ void Pokemon::Recovery()
 		
 }
 
+void Pokemon::ResetPosition(Vector2 startPos)
+{
+	pos = startPos;
+}
+
 void Pokemon::Change()
 {
 

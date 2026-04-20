@@ -1,8 +1,10 @@
 #include "framework.h"
-#include "Data/PokemonData.h"
+#include "Battle/IBattleContext.h"
 
 BattleManager::BattleManager(bool mode)
-	: mode(mode), is_appearance(true), m_appear_step(0), change_turn(0)
+	: m_context(mode ? (unique_ptr<IBattleContext>)make_unique<VsPokemonContext>()
+	                 : make_unique<VsChampionContext>())
+	, is_appearance(true), m_appear_step(0), change_turn(0)
 {
 	vector<unique_ptr<Pokemon>> my_box, en_box;
 	for (const auto& d : PokemonData::PLAYER)
@@ -10,31 +12,20 @@ BattleManager::BattleManager(bool mode)
 			Vector2(WIN_CENTER_X / 2, 420), d.sx, d.sy, d.sw, d.sh, d.attack));
 	player_box = make_unique<PokemonBox>(std::move(my_box));
 
-	if (mode) {
-		for (const auto& d : PokemonData::VS_POKEMON_ENEMY)
-			en_box.push_back(make_unique<Pokemon>(
-				Vector2(WIN_CENTER_X + 345, 305), d.sx, d.sy, d.sw, d.sh, d.attack));
-	} else {
-		for (int i = 0; i < 3; ++i) {
-			const auto& d = PokemonData::VS_CHAMPION_ENEMY[i];
-			float py = (i == 0) ? 305.0f : 285.0f;
-			en_box.push_back(make_unique<Pokemon>(
-				Vector2(WIN_CENTER_X + 345, py), d.sx, d.sy, d.sw, d.sh, d.attack));
-		}
-	}
+	m_context->BuildEnemyTeam(en_box);
 	enemy_box = make_unique<PokemonBox>(std::move(en_box));
 
-	player_box->GetField()->is_active = false;
-	enemy_box->GetField()->is_active  = false;
+	player_box->GetField()->SetActive(false);
+	enemy_box->GetField()->SetActive(false);
 
-	player_status = make_unique<StatusBox>(true,  g_state, mode);
-	enemy_status  = make_unique<StatusBox>(false, g_state, mode);
+	player_status = make_unique<StatusBox>(true,  g_state, false);
+	enemy_status  = make_unique<StatusBox>(false, g_state, m_context->GetEnemyNameSlotOffset() > 0);
 
 	button = make_unique<SelectButton>();
 	button->is_active = false;
 
-	behavior     = make_unique<BattleAnimation>(mode);
-	action_proc  = make_unique<ActionProcessor>(behavior.get());
+	behavior    = make_unique<BattleAnimation>(/*withChampion=*/!m_context->IsVsPokemon());
+	action_proc = make_unique<ActionProcessor>(behavior.get());
 }
 
 BattleManager::~BattleManager() {}
@@ -47,15 +38,13 @@ UINT BattleManager::GetPlayerSkillSlot() const {
 }
 
 UINT BattleManager::GetEnemySkillSlot() const {
-	if (mode) return 1;
-	static const UINT MAP[] = { 1, 2, 4 };
-	return MAP[enemy_box->GetFieldIndex()];
+	return m_context->GetEnemySkillSlot(enemy_box->GetFieldIndex());
 }
 
 // ─── Appearance (intro animation) ────────────────────────────────────────────
 
 void BattleManager::Appearance() {
-	if (mode) {
+	if (m_context->IsVsPokemon()) {
 		behavior->GetPlayer()->SetGender(g_state.gender);
 		switch (m_appear_step) {
 		case 0:
@@ -64,7 +53,7 @@ void BattleManager::Appearance() {
 			if (!behavior->GetAppearance()->GetClips()[0]->isPlay()) m_appear_step++;
 			break;
 		case 1:
-			enemy_box->GetField()->is_active = true;
+			enemy_box->GetField()->SetActive(true);
 			enemy_box->GetField()->Update();
 			enemy_status->pos = Vector2(WIN_CENTER_X - 380, 200);
 			enemy_status->SetHPBar(enemy_box->GetField()->GetHP());
@@ -78,7 +67,7 @@ void BattleManager::Appearance() {
 			if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) m_appear_step++;
 			break;
 		case 3:
-			player_box->GetField()->is_active = true;
+			player_box->GetField()->SetActive(true);
 			player_box->GetField()->Update();
 			player_status->pos = Vector2(WIN_CENTER_X + 360, 450);
 			player_status->SetHPBar(player_box->GetField()->GetHP());
@@ -109,7 +98,7 @@ void BattleManager::Appearance() {
 		case 3:
 			behavior->GetPlayer()->SetGender(g_state.gender);
 			behavior->GetPlayer()->Update(1);
-			enemy_box->GetField()->is_active = true;
+			enemy_box->GetField()->SetActive(true);
 			enemy_box->GetField()->Update();
 			enemy_status->pos = Vector2(WIN_CENTER_X - 380, 200);
 			enemy_status->SetHPBar(enemy_box->GetField()->GetHP());
@@ -124,7 +113,7 @@ void BattleManager::Appearance() {
 			if (!behavior->GetPokeball()->GetClips()[0]->isPlay()) m_appear_step++;
 			break;
 		case 5:
-			player_box->GetField()->is_active = true;
+			player_box->GetField()->SetActive(true);
 			player_box->GetField()->Update();
 			player_status->pos = Vector2(WIN_CENTER_X + 360, 450);
 			player_status->SetHPBar(player_box->GetField()->GetHP());
@@ -161,15 +150,8 @@ void BattleManager::HandlePlayerFainted() {
 	if (player_box->GetField()->pos.x <= 0) {
 		player_status->SetIsStatus(false);
 
-		if (player_box->AllFainted()) {
-			if (mode) {
-				g_state.lose_vsPokemon  = true;
-				g_state.clear_vsPokemon = true;
-			} else {
-				g_state.lose_vsChampion  = true;
-				g_state.clear_vsChampion = true;
-			}
-		}
+		if (player_box->AllFainted())
+			m_context->OnPlayerLose(g_state);
 
 		if (!behavior->GetPokeball()->GetClips()[0]->isPlay())
 			behavior->GetPokeball()->GetClips()[0]->Play();
@@ -180,8 +162,7 @@ void BattleManager::HandlePlayerFainted() {
 			if (player_box->SwitchToNext()) {
 				player_status->SetHPBar(player_box->GetField()->GetHP());
 				player_status->SetCurrentHP(player_box->GetField()->GetHP());
-				if (player_box->GetField()->pos.x != WIN_CENTER_X / 2)
-					player_box->GetField()->pos.x = WIN_CENTER_X / 2;
+				player_box->GetField()->ResetPosition(Vector2(WIN_CENTER_X / 2, 420));
 				turn_state.EndAction();
 			}
 		}
@@ -202,13 +183,10 @@ void BattleManager::HandleEnemyFainted() {
 	if (enemy_box->GetField()->pos.x >= WIN_WIDTH) {
 		enemy_status->SetIsStatus(false);
 
-		if (mode) {
-			g_state.clear_vsPokemon = true;
-			return;
-		}
+		m_context->OnEnemyFainted(g_state, enemy_box->AllFainted());
 
-		if (enemy_box->AllFainted())
-			g_state.clear_vsChampion = true;
+		if (m_context->IsVsPokemon())
+			return;
 
 		switch (change_turn) {
 		case 0:
@@ -234,7 +212,7 @@ void BattleManager::HandleEnemyFainted() {
 				if (!behavior->GetAppearance()->GetClips()[animSlot]->isPlay()) {
 					enemy_box->SwitchToNext();
 					enemy_status->SetHPBar(enemy_box->GetField()->GetHP());
-					enemy_box->GetField()->pos.x = WIN_CENTER_X + 345;
+					enemy_box->GetField()->ResetPosition(Vector2(WIN_CENTER_X + 345, 285));
 					change_turn = 0;
 					turn_state.EndAction();
 				}
@@ -247,25 +225,33 @@ void BattleManager::HandleEnemyFainted() {
 
 // ─── Player input ─────────────────────────────────────────────────────────────
 
-void BattleManager::ProcessPlayerInput() {
-	const Vector2& click = g_state.mouse_click_pos;
+bool BattleManager::HasAliveReserve() const {
+	for (int i = 0; i < player_box->GetSize(); ++i) {
+		if (player_box->GetPokemon(i) != player_box->GetField() &&
+			player_box->GetPokemon(i)->GetIsSurvive())
+			return true;
+	}
+	return false;
+}
 
-	if (click.x > 22 && click.x < 405 && click.y > 560 && click.y < 726) {
+void BattleManager::ProcessPlayerInput() {
+	const ButtonAction action = button->GetClickedAction(g_state.mouse_click_pos);
+	switch (action) {
+	case ButtonAction::Attack:
 		turn_state.BeginAction(ActionPhase::Attack);
-	} else if (click.x > 440 && click.x < 840 && click.y > 560 && click.y < 726) {
-		if (player_box->GetField()->GetHP() < 100)
+		break;
+	case ButtonAction::Recovery:
+		if (player_box->GetField()->GetHP() < 100.0f)
 			turn_state.BeginAction(ActionPhase::Recovery);
 		else
 			g_state.mouse_click_pos = Vector2(0, 0);
-	} else if (click.x > 875 && click.x < 1255 && click.y > 560 && click.y < 726) {
-		bool can_change = false;
-		for (int i = 0; i < player_box->GetSize(); ++i) {
-			if (player_box->GetPokemon(i) != player_box->GetField() &&
-				player_box->GetPokemon(i)->GetIsSurvive()) {
-				can_change = true; break;
-			}
-		}
-		if (can_change) turn_state.BeginAction(ActionPhase::Change);
+		break;
+	case ButtonAction::Change:
+		if (HasAliveReserve())
+			turn_state.BeginAction(ActionPhase::Change);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -292,8 +278,7 @@ void BattleManager::RunChangeAction() {
 			if (player_box->SwitchToNext()) {
 				player_status->SetHPBar(player_box->GetField()->GetHP());
 				player_status->SetCurrentHP(player_box->GetField()->GetHP());
-				if (player_box->GetField()->pos.x != WIN_CENTER_X / 2)
-					player_box->GetField()->pos.x = WIN_CENTER_X / 2;
+				player_box->GetField()->ResetPosition(Vector2(WIN_CENTER_X / 2, 420));
 			}
 			turn_state.EndAction();
 			turn_state.SwitchTurn();
@@ -308,7 +293,7 @@ void BattleManager::RunCurrentAction() {
 	switch (turn_state.phase) {
 	case ActionPhase::Attack:
 		if (turn_state.IsPlayerTurn()) {
-			bool done = action_proc->RunPlayerAttack(
+			bool done = action_proc->RunAttack(
 				GetPlayerSkillSlot(),
 				player_box->GetField(), enemy_box->GetField(),
 				enemy_status.get());
@@ -319,10 +304,10 @@ void BattleManager::RunCurrentAction() {
 				g_state.mouse_click_pos = Vector2(0, 0);
 			}
 		} else {
-			bool done = action_proc->RunEnemyAttack(
+			bool done = action_proc->RunAttack(
 				GetEnemySkillSlot(),
 				enemy_box->GetField(), player_box->GetField(),
-				player_status.get(), player_status.get());
+				player_status.get());
 			if (done) {
 				turn_state.EndAction();
 				turn_state.SwitchTurn();

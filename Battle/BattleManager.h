@@ -13,7 +13,7 @@ private:
 	unique_ptr<SelectButton>    button;
 	unique_ptr<BattleAnimation> behavior;
 
-	bool mode;
+	unique_ptr<IBattleContext> m_context;
 	bool is_appearance;
 	UINT m_appear_step;
 	UINT change_turn;
@@ -29,6 +29,7 @@ private:
 
 	UINT GetPlayerSkillSlot() const;
 	UINT GetEnemySkillSlot()  const;
+	bool HasAliveReserve()    const;
 
 public:
 	BattleManager(bool mode);

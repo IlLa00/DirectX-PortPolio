@@ -2,26 +2,23 @@
 class BattleAnimation
 {
 private:
-	Appearance* appearance;
-	BattlePlayer* player;
-	Pokeball* pokeball;
-	Skill* skill;
-	Meditation* meditation;
-
-	Champion* champion;
-
-	bool mode;
+	unique_ptr<Appearance>    appearance;
+	unique_ptr<BattlePlayer>  player;
+	unique_ptr<Pokeball>      pokeball;
+	unique_ptr<Skill>         skill;
+	unique_ptr<Meditation>    meditation;
+	unique_ptr<Champion>      champion;   // null when not in vsChampion mode
 
 public:
-	BattleAnimation(bool mode);
-	~BattleAnimation();
+	explicit BattleAnimation(bool withChampion);
+	~BattleAnimation() = default;
 
-	Appearance* GetAppearance() { return appearance; }
-	BattlePlayer* GetPlayer() { return player; }
-	Pokeball* GetPokeball() { return pokeball; }
-	Skill* GetSkill() { return skill; }
-	Meditation* GetMeditation() { return meditation; }
-	Champion* GetChampion() { return champion; }
+	Appearance*   GetAppearance()  { return appearance.get(); }
+	BattlePlayer* GetPlayer()      { return player.get(); }
+	Pokeball*     GetPokeball()    { return pokeball.get(); }
+	Skill*        GetSkill()       { return skill.get(); }
+	Meditation*   GetMeditation()  { return meditation.get(); }
+	Champion*     GetChampion()    { return champion.get(); }
 
 	void Update(UINT slot);
 	void Render();

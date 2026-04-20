@@ -1,5 +1,14 @@
 #include "framework.h"
 
+ButtonAction SelectButton::GetClickedAction(Vector2 clickPos) const
+{
+	if (!is_active) return ButtonAction::None;
+	if (button_list[0]->isPointCollision(clickPos)) return ButtonAction::Attack;
+	if (button_list[1]->isPointCollision(clickPos)) return ButtonAction::Recovery;
+	if (button_list[2]->isPointCollision(clickPos)) return ButtonAction::Change;
+	return ButtonAction::None;
+}
+
 SelectButton::SelectButton()
 {
 	wstring file = L"Texture/StatusBox.png";

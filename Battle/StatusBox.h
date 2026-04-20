@@ -18,7 +18,7 @@ private:
 	const GameState& m_state;
 
 	bool position;
-	bool battle_mode; // true = vsPokemon, false = vsChampion
+	UINT slot_offset; // 0 = vsPokemon, 1 = vsChampion (enemy name font index offset)
 	UINT slot;
 	float hp;
 
@@ -31,7 +31,7 @@ private:
 	ColourBuffer* CB;
 
 public:
-	StatusBox(bool position, const GameState& state, bool battle_mode = true);
+	StatusBox(bool position, const GameState& state, bool hasSlotOffset = false);
 	~StatusBox();
 
 	void SetStatus(UINT slot) { this->slot = slot; }

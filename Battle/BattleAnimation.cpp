@@ -1,87 +1,37 @@
 #include "framework.h"
 
-BattleAnimation::BattleAnimation(bool mode) : mode(mode)
+BattleAnimation::BattleAnimation(bool withChampion)
 {
-	if (mode)
-	{
-		appearance = new Appearance();
-		player = new BattlePlayer(Vector2(250, WIN_CENTER_Y + 80), g_state.gender);
-		pokeball = new Pokeball();
-		skill = new Skill();
-		meditation = new Meditation();
-	}
-	else
-	{
-		champion = new Champion();
-		player = new BattlePlayer(Vector2(250, WIN_CENTER_Y + 80), g_state.gender);
-		pokeball = new Pokeball();
-		appearance = new Appearance();
-		skill = new Skill();
-		meditation = new Meditation();
-	}
-}
+	appearance = make_unique<Appearance>();
+	player     = make_unique<BattlePlayer>(Vector2(250, WIN_CENTER_Y + 80), g_state.gender);
+	pokeball   = make_unique<Pokeball>();
+	skill      = make_unique<Skill>();
+	meditation = make_unique<Meditation>();
 
-BattleAnimation::~BattleAnimation()
-{
-	if (mode)
-	{
-		delete appearance;
-		delete player;
-		delete pokeball;
-		delete skill;
-		delete meditation;
-	}
-	else
-	{
-		delete champion;
-		delete player;
-		delete pokeball;
-		delete appearance;
-		delete skill;
-		delete meditation;
-	}
-	
+	if (withChampion)
+		champion = make_unique<Champion>();
 }
 
 void BattleAnimation::Update(UINT slot)
 {
-	if (mode)
-	{
-		appearance->Update(slot);
-		player->Update(slot);
-		pokeball->Update(slot);
-		skill->Update(slot);
-		meditation->Update();
-	}
-	else
-	{
+	if (champion)
 		champion->Update();
-		player->Update(slot);
-		pokeball->Update(slot);
-		appearance->Update(slot);
-		skill->Update(slot);
-		meditation->Update();
-	}
-	
+
+	player->Update(slot);
+	pokeball->Update(slot);
+	appearance->Update(slot);
+	skill->Update(slot);
+	meditation->Update();
 }
 
 void BattleAnimation::Render()
 {
-	if (mode)
-	{
-		appearance->Render();
-		player->Render();
-		pokeball->Render();
-		skill->Render();
-		meditation->Render();
-	}
-	else
-	{
+	if (champion)
 		champion->Render();
-		player->Render();
-		pokeball->Render();
-		appearance->Render();
-		skill->Render();
-		meditation->Render();
-	}
+
+	player->Render();
+	pokeball->Render();
+	appearance->Render();
+	skill->Render();
+	meditation->Render();
 }
