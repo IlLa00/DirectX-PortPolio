@@ -1,7 +1,7 @@
 #include "framework.h"
 
-StatusBox::StatusBox(bool position, const GameState& state, bool battle_mode)
-	: position(position), m_state(state), battle_mode(battle_mode)
+StatusBox::StatusBox(bool position, const GameState& state, bool hasSlotOffset)
+	: position(position), m_state(state), slot_offset(hasSlotOffset ? 1u : 0u)
 {
 	if (position) // �÷��̾� ���ϸ�
 	{
@@ -81,16 +81,8 @@ void StatusBox::Update()
 		for (auto h : HPbar_list)
 			h->Update();
 
-		if (battle_mode)
-		{
-			enemy_name->Update(slot);
-			enemy_level->Update(slot);
-		}
-		else
-		{
-			enemy_name->Update(slot + 1);
-			enemy_level->Update(slot + 1);
-		}
+		enemy_name->Update(slot + slot_offset);
+		enemy_level->Update(slot + slot_offset);
 	}
 	
 	WorldUpdate();
@@ -138,16 +130,8 @@ void StatusBox::Render()
 					HPbar_list[i]->Render();
 			}
 				
-			if (battle_mode)
-			{
-				enemy_name->Render(slot);
-				enemy_level->Render(slot);
-			}
-			else
-			{
-				enemy_name->Render(slot + 1);
-				enemy_level->Render(slot + 1);
-			}
+			enemy_name->Render(slot + slot_offset);
+			enemy_level->Render(slot + slot_offset);
 			
 		}
 	}

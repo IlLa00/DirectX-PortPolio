@@ -4,7 +4,7 @@ ActionProcessor::ActionProcessor(BattleAnimation* behavior)
 	: m_behavior(behavior)
 {}
 
-bool ActionProcessor::RunPlayerAttack(UINT slot, Pokemon* atk, Pokemon* def, StatusBox* defStatus) {
+bool ActionProcessor::RunAttack(UINT slot, Pokemon* atk, Pokemon* def, StatusBox* defStatus) {
 	Clip* clip = m_behavior->GetSkill()->GetClips()[slot];
 	switch (m_atkState) {
 	case AttackState::Start:
@@ -18,27 +18,6 @@ bool ActionProcessor::RunPlayerAttack(UINT slot, Pokemon* atk, Pokemon* def, Sta
 	case AttackState::Damage:
 		atk->Attack(def);
 		defStatus->SetHPBar(def->GetHP());
-		m_atkState = AttackState::Start;
-		return true;
-	}
-	return false;
-}
-
-bool ActionProcessor::RunEnemyAttack(UINT slot, Pokemon* atk, Pokemon* def, StatusBox* defStatus, StatusBox* atkStatus) {
-	Clip* clip = m_behavior->GetSkill()->GetClips()[slot];
-	switch (m_atkState) {
-	case AttackState::Start:
-		if (!clip->isPlay()) clip->Play();
-		m_atkState = AttackState::Animation;
-		return false;
-	case AttackState::Animation:
-		m_behavior->GetSkill()->Update(slot);
-		if (!clip->isPlay()) m_atkState = AttackState::Damage;
-		return false;
-	case AttackState::Damage:
-		atk->Attack(def);
-		defStatus->SetHPBar(def->GetHP());
-		atkStatus->SetCurrentHP(def->GetHP());
 		m_atkState = AttackState::Start;
 		return true;
 	}
