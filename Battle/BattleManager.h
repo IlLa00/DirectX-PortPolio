@@ -13,7 +13,7 @@ private:
 	unique_ptr<SelectButton>    button;
 	unique_ptr<BattleAnimation> behavior;
 
-	unique_ptr<IBattleContext> m_context;
+	unique_ptr<class IBattleContext> m_context;
 	bool is_appearance;
 	UINT m_appear_step;
 	UINT change_turn;
